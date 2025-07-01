@@ -31,7 +31,7 @@ class Web3StorageClient {
   async authenticate(email: string) {
     await this.initialize()
     await this.client.authorize(email)
-    let spaces = this.client.spaces()
+    const spaces = this.client.spaces()
     if (!spaces || spaces.length === 0) {
       const space = await this.client.createSpace('NFT Layer Composer')
       await this.client.setCurrentSpace(space.did())

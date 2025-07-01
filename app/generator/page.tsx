@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useCallback, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-// import { Web3StorageModal } from "@/components/web3-storage-modal"
+import { Web3StorageModal } from "@/components/web3-storage-modal"
 import { DeployCollection } from "@/components/deploy-collection"
 import { StepOne } from "@/components/generator/step-one"
 import { ExportUploadStep } from "@/components/generator/export-upload-step"
@@ -585,7 +585,7 @@ export default function NFTGenerator() {
           calculateMaxNFTs={calculateMaxNFTs}
         />
         {/* Web3 Storage Modal */}
-        {/* {showWeb3Modal && (
+        {showWeb3Modal && (
           <Web3StorageModal
             isOpen={showWeb3Modal}
             onClose={() => setShowWeb3Modal(false)}
@@ -594,7 +594,7 @@ export default function NFTGenerator() {
             collectionSettings={collectionSettings}
             onUploadComplete={handleUploadComplete}
           />
-        )} */}
+        )}
       </>
     );
   } else if (currentStep === 2) {
@@ -852,7 +852,7 @@ export default function NFTGenerator() {
           </div>
         </div>
         {/* Web3 Storage Modal */}
-        {/* {showWeb3Modal && (
+        {showWeb3Modal && (
           <Web3StorageModal
             isOpen={showWeb3Modal}
             onClose={() => setShowWeb3Modal(false)}
@@ -861,7 +861,7 @@ export default function NFTGenerator() {
             collectionSettings={collectionSettings}
             onUploadComplete={handleUploadComplete}
           />
-        )} */}
+        )}
       </>
     );
   } else if (currentStep === 3) {
@@ -880,7 +880,7 @@ export default function NFTGenerator() {
           onShowWeb3Modal={() => setShowWeb3Modal(true)}
         />
         {/* Web3 Storage Modal */}
-        {/* {showWeb3Modal && (
+        {showWeb3Modal && (
           <Web3StorageModal
             isOpen={showWeb3Modal}
             onClose={() => setShowWeb3Modal(false)}
@@ -889,7 +889,7 @@ export default function NFTGenerator() {
             collectionSettings={collectionSettings}
             onUploadComplete={handleUploadComplete}
           />
-        )} */}
+        )}
       </>
     );
   } else if (currentStep === 4) {

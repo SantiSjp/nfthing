@@ -115,6 +115,7 @@ export default function Component() {
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [currentPage, setCurrentPage] = useState<"home" | "discover" | "artist">("home")
   const [rectangles, setRectangles] = useState<any[]>([])
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Auto glitch effect every 8-12 seconds
   useEffect(() => {
@@ -233,11 +234,49 @@ export default function Component() {
           <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
             <User className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10">
+          <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10" onClick={() => setMobileMenuOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
         </div>
       </header>
+
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex flex-col">
+          <div className="flex justify-end p-4">
+            <button
+              className="text-white text-3xl focus:outline-none"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu"
+            >
+              &times;
+            </button>
+          </div>
+          <nav className="flex flex-col items-center gap-8 mt-8">
+            <a
+              href="#"
+              className="text-white text-xl font-medium hover:opacity-70"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Explore
+            </a>
+            <a
+              href="/generator"
+              className="text-white text-xl font-medium hover:opacity-70"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Create
+            </a>
+            <a
+              href="#"
+              className="text-white text-xl font-medium hover:opacity-70"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Community
+            </a>
+          </nav>
+        </div>
+      )}
 
       {/* Hero Section */}
       <main className="relative z-40 flex flex-col items-center justify-center min-h-[calc(100vh-120px)] text-center px-6">
@@ -284,7 +323,7 @@ export default function Component() {
       </main>
 
       {/* Mobile responsive overlay for small screens */}
-      <div className="md:hidden absolute inset-0 bg-black/70 z-30"></div>
+      {/* <div className="md:hidden absolute inset-0 bg-black/70 z-30"></div> */}
 
       {/* Subtle vignette effect */}
       {isDarkMode && (

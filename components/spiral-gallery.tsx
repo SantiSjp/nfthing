@@ -10,8 +10,104 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
+// Expanded array with all new images
+const realImages = [
+  "/images/robot-flower.jpg",
+  "/images/black-cat.jpg",
+  "/images/psychedelic-face.jpg",
+  "/images/portal-jump.jpg",
+  "/images/colorful-portrait.jpg",
+  "/images/abstract-head.jpg",
+  "/images/digital-touch.jpg",
+  "/images/digital-hands.jpg",
+  "/images/gradient-cat.jpg",
+  "/images/rainbow-bear.jpg",
+  "/images/holographic-face.jpg",
+  "/images/space-cat.jpg",
+  "/images/pop-art-portrait.jpg",
+  "/images/colorful-skull.jpg",
+  "/images/surreal-collage.jpg",
+  "/images/egg-magnifier.jpg",
+  "/images/martini-glasses.jpg",
+  "/images/ufo-mouth.jpg",
+  "/images/binocular-fingers.jpg",
+  "/images/anime-cyberpunk.jpg",
+  "/images/flame-cat.jpg",
+  "/images/on-fire-face.jpg",
+  "/images/psychedelic-eyes.jpg",
+  "/images/shocked-cat.jpg",
+  "/images/holographic-tablet.jpg",
+  "/images/mystical-hands.jpg",
+  "/images/crystal-astronaut.jpg",
+  "/images/smiley-paddle.jpg",
+  "/images/keyhole-eye.jpg",
+  "/images/poker-aces.jpg",
+  "/images/ping-pong-smiley.jpg",
+  "/images/shocked-cat-yellow.jpg",
+  "/images/poker-hand-aces.jpg",
+  "/images/holographic-fish-tablet.jpg",
+  "/images/keyhole-green-eye.jpg",
+  "/images/crystal-astronaut-chair.jpg",
+  "/images/psychedelic-woman-eyes.jpg",
+  "/images/mystical-hands-moon.jpg",
+  "/images/rainbow-mouth-space.jpg",
+  "/images/purple-figure-chair.jpg",
+  "/images/blue-eyes-pattern.jpg",
+  "/images/fingers-spiral-pink.jpg",
+  "/images/yellow-spiral-smiley.jpg",
+  "/images/checkered-mouth-yellow.jpg",
+  "/images/colorful-hands-unity.jpg",
+]
 
+function generateTunnelLayers() {
+  const layers = []
+  const totalLayers = 20
+  const baseRectanglesPerLayer = 12
 
+  for (let layer = 0; layer < totalLayers; layer++) {
+    const layerDepth = layer * 280
+    const layerScale = Math.pow(0.92, layer)
+    const rectangleSize = Math.max(180 * layerScale, 8)
+    const rectanglesPerLayer = Math.max(baseRectanglesPerLayer - Math.floor(layer / 7), 5)
+    const rotationOffset = layer * 18
+
+    const baseRadius = layer < 5 ? 900 + layer * 150 : 700 + layer * 120
+
+    for (let i = 0; i < rectanglesPerLayer; i++) {
+      const angle = (360 / rectanglesPerLayer) * i + rotationOffset
+      const radius = baseRadius
+
+      const x = Math.cos((angle * Math.PI) / 180) * radius * layerScale
+      const y = Math.sin((angle * Math.PI) / 180) * radius * layerScale
+
+      const distanceFromCenter = Math.sqrt(x * x + y * y)
+      const maxDistance = 1600
+      const perspectiveIntensity = Math.min(distanceFromCenter / maxDistance, 1)
+
+      const useRealImage = Math.random() < 0.8
+      const imageIndex = Math.floor(Math.random() * realImages.length)
+
+      layers.push({
+        id: `layer-${layer}-${i}`,
+        x,
+        y,
+        z: -layerDepth,
+        size: rectangleSize,
+        rotation: angle,
+        layer,
+        index: i,
+        scale: layerScale,
+        opacity: Math.max(0.85 - layer * 0.03, 0.1),
+        perspectiveIntensity,
+        angleToCenter: Math.atan2(y, x) * (180 / Math.PI),
+        useRealImage,
+        imageIndex,
+      })
+    }
+  }
+
+  return layers
+}
 
 export default function Component() {
   const [titleHovered, setTitleHovered] = useState(false)
@@ -45,105 +141,6 @@ export default function Component() {
     }, 2000) // Atualiza a cada 2 segundos
     return () => clearInterval(interval)
   }, [])
-
-  // Expanded array with all new images
-  const realImages = [
-    "/images/robot-flower.jpg",
-    "/images/black-cat.jpg",
-    "/images/psychedelic-face.jpg",
-    "/images/portal-jump.jpg",
-    "/images/colorful-portrait.jpg",
-    "/images/abstract-head.jpg",
-    "/images/digital-touch.jpg",
-    "/images/digital-hands.jpg",
-    "/images/gradient-cat.jpg",
-    "/images/rainbow-bear.jpg",
-    "/images/holographic-face.jpg",
-    "/images/space-cat.jpg",
-    "/images/pop-art-portrait.jpg",
-    "/images/colorful-skull.jpg",
-    "/images/surreal-collage.jpg",
-    "/images/egg-magnifier.jpg",
-    "/images/martini-glasses.jpg",
-    "/images/ufo-mouth.jpg",
-    "/images/binocular-fingers.jpg",
-    "/images/anime-cyberpunk.jpg",
-    "/images/flame-cat.jpg",
-    "/images/on-fire-face.jpg",
-    "/images/psychedelic-eyes.jpg",
-    "/images/shocked-cat.jpg",
-    "/images/holographic-tablet.jpg",
-    "/images/mystical-hands.jpg",
-    "/images/crystal-astronaut.jpg",
-    "/images/smiley-paddle.jpg",
-    "/images/keyhole-eye.jpg",
-    "/images/poker-aces.jpg",
-    "/images/ping-pong-smiley.jpg",
-    "/images/shocked-cat-yellow.jpg",
-    "/images/poker-hand-aces.jpg",
-    "/images/holographic-fish-tablet.jpg",
-    "/images/keyhole-green-eye.jpg",
-    "/images/crystal-astronaut-chair.jpg",
-    "/images/psychedelic-woman-eyes.jpg",
-    "/images/mystical-hands-moon.jpg",
-    "/images/rainbow-mouth-space.jpg",
-    "/images/purple-figure-chair.jpg",
-    "/images/blue-eyes-pattern.jpg",
-    "/images/fingers-spiral-pink.jpg",
-    "/images/yellow-spiral-smiley.jpg",
-    "/images/checkered-mouth-yellow.jpg",
-    "/images/colorful-hands-unity.jpg",
-  ]
-
-  const generateTunnelLayers = () => {
-    const layers = []
-    const totalLayers = 20
-    const baseRectanglesPerLayer = 12
-
-    for (let layer = 0; layer < totalLayers; layer++) {
-      const layerDepth = layer * 280
-      const layerScale = Math.pow(0.92, layer)
-      const rectangleSize = Math.max(180 * layerScale, 8)
-      const rectanglesPerLayer = Math.max(baseRectanglesPerLayer - Math.floor(layer / 7), 5)
-      const rotationOffset = layer * 18
-
-      const baseRadius = layer < 5 ? 900 + layer * 150 : 700 + layer * 120
-
-      for (let i = 0; i < rectanglesPerLayer; i++) {
-        const angle = (360 / rectanglesPerLayer) * i + rotationOffset
-        const radius = baseRadius
-
-        const x = Math.cos((angle * Math.PI) / 180) * radius * layerScale
-        const y = Math.sin((angle * Math.PI) / 180) * radius * layerScale
-
-        const distanceFromCenter = Math.sqrt(x * x + y * y)
-        const maxDistance = 1600
-        const perspectiveIntensity = Math.min(distanceFromCenter / maxDistance, 1)
-
-        const useRealImage = Math.random() < 0.8
-        const imageIndex = Math.floor(Math.random() * realImages.length)
-
-        layers.push({
-          id: `layer-${layer}-${i}`,
-          x,
-          y,
-          z: -layerDepth,
-          size: rectangleSize,
-          rotation: angle,
-          layer,
-          index: i,
-          scale: layerScale,
-          opacity: Math.max(0.85 - layer * 0.03, 0.1),
-          perspectiveIntensity,
-          angleToCenter: Math.atan2(y, x) * (180 / Math.PI),
-          useRealImage,
-          imageIndex,
-        })
-      }
-    }
-
-    return layers
-  }
 
   return (
     <div className="min-h-screen overflow-hidden relative bg-black">

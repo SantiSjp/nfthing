@@ -321,6 +321,14 @@ export function StepOne({
             {/* Right Sidebar - Preview & Settings */}
             <div className="col-span-3 space-y-4">
               {/* Small Preview */}
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={onGenerateNFTs}
+                disabled={totalTraits === 0}
+                size="lg"
+              >
+                Generate NFTs
+              </Button>
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-sm">
@@ -469,15 +477,7 @@ export function StepOne({
                 </CardContent>
               </Card>
 
-              {/* Generate Button */}
-              <Button
-                className="w-full bg-blue-600 hover:bg-blue-700"
-                onClick={onGenerateNFTs}
-                disabled={totalTraits === 0}
-                size="lg"
-              >
-                Generate NFTs
-              </Button>
+              {/* Generate Button */}             
             </div>
           </div>
         </div>

@@ -11,6 +11,8 @@ import { Rocket, AlertTriangle, Info, Wallet, DollarSign, Hash, Globe, Users, Cr
 import { useCreateCollection } from "@/hooks/useCreateCollection"
 import { parseUnits } from "viem/utils"
 import { toast } from 'sonner';
+import { insertCollection } from "@/lib/supabase";
+import { useAccount } from "wagmi";
 
 interface DeployCollectionProps {
   baseURI: string
@@ -46,6 +48,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
   const [txHash, setTxHash] = useState<string | null>(null)
 
   const { createCollection, isPending } = useCreateCollection()
+  const { address } = useAccount();
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {}
@@ -109,6 +112,18 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
       toast.success('Collection deployed successfully!', {
         duration: 4000,
         icon: '✅',
+      });
+      // Salvar no Supabase
+      await insertCollection({
+        name: formData.name,
+        symbol: formData.symbol,
+        baseUri: formData.baseURI,
+        royalty: formData.royaltyBps.toString(),
+        price: formData.price,
+        supply: formData.maxSupply,
+        maxPerWallet: formData.maxPerWallet,
+        created_at: new Date().toISOString(),
+        creator: address,
       });
       onDeploy(formData)
     } catch (err: any) {
@@ -369,7 +384,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
               ) : (
                 <>
                   <Rocket className="w-5 h-5 mr-2" />
-                  Deploy Collection
+                  {address ? 'Deploy Collection' : 'Connect Wallet'}
                 </>
               )}
             </Button>

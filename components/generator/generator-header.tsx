@@ -1,6 +1,7 @@
 "use client"
 import ConnectButton from "../ConnectButton"
 import { ModeToggle } from "../toogle"
+import { useTheme } from "next-themes"
 
 interface GeneratorHeaderProps {
   currentStep: number
@@ -10,16 +11,22 @@ interface GeneratorHeaderProps {
 }
 
 export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onStepClick }: GeneratorHeaderProps) {
+  const { theme } = useTheme();
   return (
     <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto max-w-7xl px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo/Title */}
           <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">N</span>
-            </div>
-            <span className="font-semibold text-lg">NFT Generator</span>
+            <img
+              src={
+                theme === "dark"
+                  ? "/logo-4.png"
+                  : "/logo-3.png"
+              }
+              alt="NFThing Logo"
+              className="h-10 w-30 object-contain"
+            />
           </div>
 
           {/* Steps Navigation - Centered */}

@@ -9,6 +9,8 @@ import {
   Menu
 } from "lucide-react"
 import Link from "next/link"
+import { ModeToggle } from "./toogle"
+import ConnectButton from "./ConnectButton"
 
 // Expanded array with all new images
 const realImages = [
@@ -201,12 +203,12 @@ export default function Component() {
       </div>
 
       {/* Header Navigation */}
-      <header className="relative z-50 flex items-center justify-between p-6">
+      <header className="relative z-50 grid grid-cols-3 items-center p-6">
         <div className="flex items-center space-x-2">
           <h3 className={`font-bold text-xl tracking-tight ${isDarkMode ? "text-white" : "text-gray-900"}`}>nfthing</h3>
         </div>
 
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-8 justify-center">
           <a
             href="#"
             className={`hover:opacity-70 transition-colors font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}
@@ -227,7 +229,7 @@ export default function Component() {
           </a>
         </nav>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 justify-end">
           <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
             <Wallet className="h-5 w-5" />
           </Button>
@@ -262,6 +264,7 @@ export default function Component() {
             </a>
             <a
               href="/generator"
+              target="_blank"
               className="text-white text-xl font-medium hover:opacity-70"
               onClick={() => setMobileMenuOpen(false)}
             >
@@ -289,7 +292,7 @@ export default function Component() {
             className={`glitch-text text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight cursor-pointer text-white ${titleHovered || autoGlitch ? "glitch-active" : ""}`}
             data-text="nfthing"
           >
-            nfthing
+            <img src="/logo-4.png" alt="nfthing" className="w-100 h-30" />
           </h1>
         </div>
 
@@ -316,7 +319,7 @@ export default function Component() {
             size="lg"
             className={`font-semibold px-8 py-3 text-lg`}
           >
-            <Link href="/generator">Create NFT</Link>
+            <Link href="/generator" target="_blank">Get Started</Link>
           </Button>       
           
         </div>

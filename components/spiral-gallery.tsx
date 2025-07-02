@@ -205,7 +205,7 @@ export default function Component() {
       {/* Header Navigation */}
       <header className="relative z-50 grid grid-cols-3 items-center p-6">
         <div className="flex items-center space-x-2">
-          <h3 className={`font-bold text-xl tracking-tight ${isDarkMode ? "text-white" : "text-gray-900"}`}>nfthing</h3>
+          <img src="/logo-4.png" alt="nfthing" className="w-20 h-5" />
         </div>
 
         <nav className="hidden md:flex items-center space-x-8 justify-center">

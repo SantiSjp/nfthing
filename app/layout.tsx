@@ -17,7 +17,21 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "NFThing",
-  description: "NFThing",
+  description: "NFThing is a platform for creating and sharing NFTs.",
+  openGraph: {
+    title: "NFThing",
+    description: "NFThing is a platform for creating and sharing NFTs.",
+    url: "https://nfthing-beta.vercel.app",
+    images: [
+      { url: "/logo-1.png", width: 1200, height: 630, alt: "NFThing" },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NFThing",
+    description: "NFThing is a platform for creating and sharing NFTs.",
+    images: ["/logo-1.png"],
+  },
 };
 
 export default async function RootLayout({

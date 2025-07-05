@@ -222,23 +222,18 @@ export default function Component() {
             Create
           </a>
           <a
-            href="#"
+            href="/dashboard"
             className={`hover:opacity-70 transition-colors font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}
           >
-            Community
+            Dashboard
           </a>
         </nav>
 
-        <div className="flex items-center space-x-4 justify-end">
-          <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-            <Wallet className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
-            <User className="h-5 w-5" />
-          </Button>
+        <div className="flex items-center space-x-4 justify-end">          
           <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10" onClick={() => setMobileMenuOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
+          <ConnectButton />
         </div>
       </header>
 
@@ -271,11 +266,11 @@ export default function Component() {
               Create
             </a>
             <a
-              href="#"
+              href="/dashboard"
               className="text-white text-xl font-medium hover:opacity-70"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Community
+              Dashboard
             </a>
           </nav>
         </div>

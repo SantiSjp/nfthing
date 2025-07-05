@@ -34,7 +34,7 @@ export async function getCollectionsByCreator(creator: string): Promise<any[] | 
 export async function insertCollection(collection: Partial<Database['public']['Tables']['collections']['Insert']>): Promise<any> {
     const { data, error } = await supabase
         .from('collections')
-        .insert([collection])
+        .insert(collection as Database['public']['Tables']['collections']['Insert'])
         .select()
         .single();
     if (error) throw new Error(error.message);

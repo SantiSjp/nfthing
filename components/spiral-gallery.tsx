@@ -150,7 +150,7 @@ export default function Component() {
   return (
     <div className="min-h-screen overflow-hidden relative bg-black">
       {/* Background Tunnel - Show in both modes */}
-      <div className={`absolute inset-0 ${isDarkMode ? "opacity-80" : "opacity-60"}`}>
+      <div className={`absolute inset-0 ${isDarkMode ? "opacity-80" : "opacity-90"}`}>
         <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ perspective: "2200px", perspectiveOrigin: "center center" }}
@@ -295,13 +295,7 @@ export default function Component() {
         </div>
 
         <h2
-          className="text-xl md:text-2xl lg:text-3xl font-semibold mb-8"
-          style={{
-            background: "linear-gradient(90deg, #ff0000 0%, #ffff00 25%, #00ff00 50%, #0000ff 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
+          className={`text-xl md:text-2xl lg:text-3xl font-semibold mb-8 ${isDarkMode ? 'text-white' : 'text-black'}`}
         >
           for creators and NFT lovers
         </h2>

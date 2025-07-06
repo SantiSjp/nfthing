@@ -32,11 +32,11 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
               <img
                 src={
                   theme === "dark"
-                    ? "/logo_preta.png"
+                    ? "/logo_branca.png"
                     : "/logo_branca.png"
                 }
                 alt="NFThing Logo"
-                className="h-10 w-30 object-contain"
+                className="h-15 w-20 object-contain"
               />
             )}
           </div>

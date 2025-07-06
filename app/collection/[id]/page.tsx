@@ -6,6 +6,8 @@ import { getCollectionById } from "@/lib/supabase"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Eye, Heart, ShoppingCart } from "lucide-react"
+import { useThemeLogo } from "@/hooks/useTheme"
+import { ModeToggle } from "@/components/toogle"
 
 interface Collection {
   id: string
@@ -26,6 +28,7 @@ export default function CollectionDetailPage() {
   const [collection, setCollection] = useState<Collection | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const { logo } = useThemeLogo()
 
   useEffect(() => {
     if (!id) return
@@ -62,8 +65,11 @@ export default function CollectionDetailPage() {
     <div className="min-h-screen bg-black text-white">
       <header className="border-b border-gray-800/50 bg-black/90 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <img src="/logo_branca.png" alt="nfthing" className="h-10 w-30 object-contain" />
-          <Button variant="ghost" onClick={() => router.back()} className="text-white">Back</Button>
+          <img src={logo} alt="nfthing" className="h-10 w-30 object-contain" />
+          <div className="flex items-center space-x-4">
+            <ModeToggle />
+            <Button variant="ghost" onClick={() => router.back()} className="text-white">Back</Button>
+          </div>
         </div>
       </header>
       <main className="container mx-auto px-6 py-12 flex flex-col md:flex-row gap-12">

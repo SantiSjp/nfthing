@@ -11,6 +11,7 @@ import {
 import Link from "next/link"
 import { ModeToggle } from "./toogle"
 import ConnectButton from "./ConnectButton"
+import { useThemeLogo } from "@/hooks/useTheme"
 
 // Expanded array with all new images
 const realImages = [
@@ -114,10 +115,11 @@ function generateTunnelLayers() {
 export default function Component() {
   const [titleHovered, setTitleHovered] = useState(false)
   const [autoGlitch, setAutoGlitch] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(true)
   const [currentPage, setCurrentPage] = useState<"home" | "discover" | "artist">("home")
   const [rectangles, setRectangles] = useState<any[]>([])
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { logo, theme, mounted } = useThemeLogo()
+  const isDarkMode = theme === "dark"
 
   // Auto glitch effect every 8-12 seconds
   useEffect(() => {
@@ -148,7 +150,7 @@ export default function Component() {
   return (
     <div className="min-h-screen overflow-hidden relative bg-black">
       {/* Background Tunnel - Show in both modes */}
-      <div className={`absolute inset-0 ${isDarkMode ? "opacity-50" : "opacity-30"}`}>
+      <div className={`absolute inset-0 ${isDarkMode ? "opacity-80" : "opacity-60"}`}>
         <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ perspective: "2200px", perspectiveOrigin: "center center" }}
@@ -168,7 +170,7 @@ export default function Component() {
                     transform: `translate3d(${rect.x}px, ${rect.y}px, ${rect.z}px) rotateZ(${rect.rotation}deg)`,
                     transformStyle: "preserve-3d",
                     width: `${rect.size}px`,
-                    height: `${rect.size * 0.75}px`,
+                    height: `${rect.size}px`,
                     opacity: rect.opacity,
                   }}
                 >
@@ -203,9 +205,9 @@ export default function Component() {
       </div>
 
       {/* Header Navigation */}
-      <header className="relative z-50 grid grid-cols-3 items-center p-6 bg-black/70 shadow-lg backdrop-blur-md rounded-b-xl">
+      <header className="relative z-50 grid grid-cols-3 items-center p-6">
         <div className="flex items-center space-x-2">
-          <img src="/logo_branca.png" alt="nfthing" className="w-25 h-10" />
+          <img src={logo} alt="nfthing" className="w-25 h-10" />
         </div>
 
         <nav className="hidden md:flex items-center space-x-8 justify-center">
@@ -233,6 +235,7 @@ export default function Component() {
           <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10" onClick={() => setMobileMenuOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
+          <ModeToggle />
           <ConnectButton />
         </div>
       </header>
@@ -287,7 +290,7 @@ export default function Component() {
             className={`glitch-text text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight cursor-pointer text-white ${titleHovered || autoGlitch ? "glitch-active" : ""}`}
             data-text="nfthing"
           >
-            <img src="/logo_branca.png" alt="nfthing" className="w-100 h-40" />
+            <img src={logo} alt="nfthing" className="w-100 h-40" />
           </h1>
         </div>
 
@@ -306,7 +309,7 @@ export default function Component() {
         <p
           className={`text-lg md:text-xl max-w-2xl mb-12 leading-relaxed ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}
         >
-          create, discover, and trade unique digital assets in Monad Testnet
+          create, deploy and make your mint page on monad testnet
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">

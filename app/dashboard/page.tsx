@@ -12,18 +12,21 @@ import ConnectButton from "@/components/ConnectButton"
 import { getCollectionsByCreator } from "@/lib/supabase"
 import { useAccount } from "wagmi"
 import { ModeToggle } from "@/components/toogle"
+import router from "next/router"
+import { useRouter } from "next/navigation"
 
 interface Collection {
   id: string
   name: string
   description: string
   itemCount: number
+  price: string
   floorPrice: string
   totalSales: number
   likes: number
   image: string
-  creator: string
-  status: "published" | "draft" | "pending"
+  creator: string 
+  status: "open" | "closed"
 }
 
 export default function CollectionsManager() {
@@ -32,8 +35,8 @@ export default function CollectionsManager() {
   const { address } = useAccount()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null)
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-
+  const router = useRouter()
+  
   useEffect(() => {
     if (!address) {
       setCollections([])
@@ -42,18 +45,20 @@ export default function CollectionsManager() {
     setLoading(true)
     getCollectionsByCreator(address)
       .then((data) => {
+        console.log(data)
         setCollections(
           (data || []).map((c: any) => ({
             id: String(c.id),
             name: c.name || "",
             description: c.description || "",
             itemCount: c.supply || 0,
+            price: c.price || "0",
             floorPrice: c.floorPrice || "0",
             totalSales: c.sales || 0,
             likes: c.likes || 0,
-            image: c.baseUri || "/placeholder.svg?height=300&width=300",
+            image: c.image || "/placeholder.svg?height=300&width=300",
             creator: c.creator || "",
-            status: c.mintIsActive === false ? "draft" : "published",
+            status: c.mintIsActive === false ? "closed" : "open",
           }))
         )
       })
@@ -73,12 +78,13 @@ export default function CollectionsManager() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
-              <img src="/logo-4.png" alt="nfthing" className="w-20 h-5" />              
+              <img src="/logo_branca.png" alt="nfthing" className="h-10 w-30 object-contain" />              
             </div>
             <div className="flex items-center space-x-4">
               <ConnectButton />
-              <ModeToggle />
+              <Button variant="ghost" onClick={() => router.push('/')} className="text-white">Back</Button>
             </div>
+            
           </div>
         </div>
       </header>
@@ -89,54 +95,16 @@ export default function CollectionsManager() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-4xl font-bold mb-2">manage collections</h2>
+              <h2 className="text-4xl font-bold mb-2">Creator Dashboard</h2>
               <p className="text-gray-400 text-lg">create and manage your digital masterpieces</p>
             </div>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2">
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Collection
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Create New Collection</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="name" className="text-sm text-gray-300">
-                      Collection Name
-                    </Label>
-                    <Input id="name" placeholder="My Amazing Collection" className="bg-gray-800 border-gray-700 mt-1" />
-                  </div>
-                  <div>
-                    <Label htmlFor="description" className="text-sm text-gray-300">
-                      Description
-                    </Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Describe your collection..."
-                      className="bg-gray-800 border-gray-700 mt-1"
-                      rows={3}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-sm text-gray-300">Collection Image</Label>
-                    <div className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center mt-1">
-                      <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                      <p className="text-gray-400 text-sm">Click to upload or drag an image</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-end space-x-2 pt-4">
-                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="border-gray-700">
-                      Cancel
-                    </Button>
-                    <Button className="bg-green-600 hover:bg-green-700">Create Collection</Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button 
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+              onClick={() => window.location.href = '/generator'}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Collection
+            </Button>
           </div>
 
           {/* Search */}
@@ -156,7 +124,6 @@ export default function CollectionsManager() {
           <div className="text-center py-16">
             <h3 className="text-xl font-semibold text-white mb-2">Connect your wallet to view your collections</h3>
             <p className="text-gray-400 mb-6">You need to connect your wallet to see the collections you have created.</p>
-            <ConnectButton />
           </div>
         ) : loading ? (
           <div className="text-center py-16 text-gray-400">Loading collections...</div>
@@ -170,11 +137,11 @@ export default function CollectionsManager() {
                     alt={collection.name}
                     className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  {collection.status === "draft" && (
-                    <Badge className="absolute top-3 right-3 bg-yellow-600/80 text-yellow-100 border-0">Draft</Badge>
+                  {collection.status === "open" && (
+                    <Badge className="absolute top-3 right-3 bg-yellow-600/80 text-yellow-100 border-0">Mint Open</Badge>
                   )}
-                  {collection.status === "pending" && (
-                    <Badge className="absolute top-3 right-3 bg-blue-600/80 text-blue-100 border-0">Pending</Badge>
+                  {collection.status === "closed" && (
+                    <Badge className="absolute top-3 right-3 bg-red-600/80 text-red-100 border-0">Mint Closed</Badge>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -183,7 +150,7 @@ export default function CollectionsManager() {
                   </h3>
                   <p className="text-blue-400 text-sm">by {collection.creator}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-green-400 font-bold text-lg">{collection.floorPrice} MON</span>
+                    <span className="text-green-400 font-bold text-lg">{collection.price} MON</span>
                     <div className="flex items-center space-x-4 text-gray-400 text-sm">
                       <span className="flex items-center">
                         <ShoppingCart className="w-4 h-4 mr-1" />
@@ -209,13 +176,7 @@ export default function CollectionsManager() {
             <h3 className="text-xl font-semibold text-white mb-2">No collections found</h3>
             <p className="text-gray-400 mb-6">
               {searchTerm ? "Try adjusting your search" : "Start by creating your first collection"}
-            </p>
-            {!searchTerm && (
-              <Button className="bg-green-600 hover:bg-green-700" onClick={() => setIsCreateDialogOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Create First Collection
-              </Button>
-            )}
+            </p>            
           </div>
         )}
       </main>
@@ -223,14 +184,14 @@ export default function CollectionsManager() {
       {/* Collection Detail Modal */}
       {selectedCollection && (
         <Dialog open={!!selectedCollection} onOpenChange={() => setSelectedCollection(null)}>
-          <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-4xl p-0">
-            <div className="flex">
+          <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-4xl p-0 w-full">
+            <div className="flex flex-col md:flex-row">
               {/* Image Section */}
-              <div className="flex-1 p-6">
+              <div className="flex-1 p-6 flex items-center justify-center">
                 <img
                   src={selectedCollection.image || "/placeholder.svg"}
                   alt={selectedCollection.name}
-                  className="w-full aspect-square object-cover rounded-lg"
+                  className="w-full max-w-xs aspect-square object-cover rounded-lg"
                 />
               </div>
 
@@ -239,22 +200,14 @@ export default function CollectionsManager() {
                 <div className="flex items-start justify-between">
                   <div>
                     <h2 className="text-2xl font-bold text-white mb-2">{selectedCollection.name}</h2>
-                    <p className="text-blue-400">by {selectedCollection.creator}</p>
+                    <p className="text-blue-400 break-all">by {selectedCollection.creator}</p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setSelectedCollection(null)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <X className="w-5 h-5" />
-                  </Button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-800/50 rounded-lg p-4">
-                    <p className="text-green-400 text-2xl font-bold">{selectedCollection.floorPrice} MON</p>
-                    <p className="text-gray-400 text-sm">Floor Price</p>
+                    <p className="text-green-400 text-2xl font-bold">{selectedCollection.price} MON</p>
+                    <p className="text-gray-400 text-sm">Mint Price</p>
                   </div>
                   <div className="bg-gray-800/50 rounded-lg p-4">
                     <p className="text-white text-2xl font-bold">{selectedCollection.totalSales}</p>
@@ -265,29 +218,18 @@ export default function CollectionsManager() {
                 <div className="space-y-3">
                   <p className="text-gray-300">{selectedCollection.description}</p>
                   <div className="flex items-center space-x-4 text-sm text-gray-400">
-                    <span>{selectedCollection.itemCount} items</span>
+                    <span>Supply: {selectedCollection.itemCount}</span>
                     <span>{selectedCollection.likes} likes</span>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3"
+                    onClick={() => window.location.href = `/collection/${selectedCollection.id}`}
+                  >
                     <Eye className="w-4 h-4 mr-2" />
                     View Collection
-                  </Button>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="border-gray-700 text-white hover:bg-gray-800 bg-transparent">
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="border-red-700 text-red-400 hover:bg-red-900/20 bg-transparent"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
-                    </Button>
-                  </div>
+                  </Button>                  
                 </div>
               </div>
             </div>

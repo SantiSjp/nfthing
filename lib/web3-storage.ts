@@ -13,6 +13,8 @@ export interface UploadProgress {
     private client: any = null
     private currentSpace: any = null
     private isInitialized = false
+    private spaceName: string | null = null
+    private account: any = null
   
     async initialize() {
       if (typeof window === "undefined") {
@@ -30,19 +32,28 @@ export interface UploadProgress {
   
     async authenticate(email: string) {
       await this.initialize()
-      await this.client.authorize(email)
-  
-      const spaces = this.client.spaces()
-      if (!spaces || spaces.length === 0) {
-        const space = await this.client.createSpace('NFT Layer Composer')
-        await this.client.setCurrentSpace(space.did())
-        await this.client.registerSpace(email)
-        this.currentSpace = space
-      } else {
-        this.currentSpace = spaces[0]
-        await this.client.setCurrentSpace(this.currentSpace.did())
+      try {
+        this.account = await this.client.login(email)
+        console.log('Account:', this.account)
+        return true
+      } catch (error) {
+        console.error('Web3StorageClient authenticate error:', error)
+        throw error
       }
-      return true
+    }
+  
+    async createAndSetSpace() {
+      try {
+      if (!this.account) throw new Error('Not authenticated. Please authenticate first.')
+      const space = await this.client.createSpace(`NFThing_${Date.now().toString().slice(-8)}`, { skipGatewayAuthorization: true, account: this.account })
+      await this.client.setCurrentSpace(space.did())
+        this.currentSpace = space
+        console.log('Space created:', space)
+        return true
+      } catch (error) {
+        console.error('Web3StorageClient createAndSetSpace error:', error)
+        throw error
+      }
     }
   
     async uploadFile(file: File, onProgress?: (progress: UploadProgress) => void): Promise<UploadResult> {
@@ -50,25 +61,32 @@ export interface UploadProgress {
       if (!this.currentSpace) throw new Error('Not authenticated. Please authenticate first.')
   
       const total = file.size
-      const cid = await this.client.uploadFile(file, {
-        onShardStored: () => {
-          if (onProgress) {
-            onProgress({ loaded: total, total, percentage: 100 })
+      try {
+        const cid = await this.client.uploadFile(file, {
+          onShardStored: () => {
+            if (onProgress) {
+              onProgress({ loaded: total, total, percentage: 100 })
+            }
           }
-        }
-      })
+        })
   
-      return {
-        cid: cid.toString(),
-        url: `https://${cid.toString()}.ipfs.w3s.link/${file.name}`,
+        return {
+          cid: cid.toString(),
+          url: `https://${cid.toString()}.ipfs.w3s.link/${file.name}`,
+        }
+      } catch (error) {
+        console.error('Web3StorageClient uploadFile error:', error)
+        throw error
       }
     }
   
     async uploadDirectory(files: File[], onProgress?: (progress: UploadProgress) => void): Promise<UploadResult> {
+      try {
       await this.initialize()
       if (!this.currentSpace) throw new Error('Not authenticated. Please authenticate first.')
   
       const total = files.reduce((acc, file) => acc + file.size, 0)
+      console.log('Uploading directory:', files)
       const cid = await this.client.uploadDirectory(files, {
         onShardStored: () => {
           if (onProgress) {
@@ -76,17 +94,29 @@ export interface UploadProgress {
           }
         }
       })
+      console.log('Directory uploaded:', cid)
   
       return {
         cid: cid.toString(),
-        url: `https://${cid.toString()}.ipfs.w3s.link/`,
+          url: `https://${cid.toString()}.ipfs.w3s.link/`,
+        }
+      } catch (error) {
+        console.error('Web3StorageClient uploadDirectory error:', error)
+        throw error
       }
     }
   
     async uploadJSON(data: any, filename: string): Promise<UploadResult> {
-      const jsonString = JSON.stringify(data, null, 2)
-      const file = new File([jsonString], filename, { type: 'application/json' })
-      return this.uploadFile(file)
+      try {
+        const jsonString = JSON.stringify(data, null, 2)
+        console.log('Uploading JSON:', jsonString)
+        const file = new File([jsonString], filename, { type: 'application/json' })
+        console.log('File created:', file)
+        return this.uploadFile(file)
+      } catch (error) {
+        console.error('Web3StorageClient uploadJSON error:', error)
+        throw error
+      }
     }
   }
   

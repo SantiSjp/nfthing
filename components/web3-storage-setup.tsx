@@ -17,7 +17,7 @@ export function Web3StorageSetup({ onSetupComplete }: Web3StorageSetupProps) {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [step, setStep] = useState<"email" | "verify" | "complete">("email")
+  const [step, setStep] = useState<"email" | "complete">("email")
 
   const handleEmailSubmit = async () => {
     if (!email) return
@@ -35,7 +35,11 @@ export function Web3StorageSetup({ onSetupComplete }: Web3StorageSetupProps) {
       console.log("Resultado da autenticação:", success)
 
       if (success) {
-        setStep("verify")
+        await web3StorageClient.createAndSetSpace()
+        setStep("complete")
+        setTimeout(() => {
+          onSetupComplete()
+        }, 2000)
       } else {
         throw new Error("Authentication failed")
       }
@@ -45,13 +49,6 @@ export function Web3StorageSetup({ onSetupComplete }: Web3StorageSetupProps) {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleVerificationComplete = () => {
-    setStep("complete")
-    setTimeout(() => {
-      onSetupComplete()
-    }, 2000)
   }
 
   return (
@@ -115,56 +112,6 @@ export function Web3StorageSetup({ onSetupComplete }: Web3StorageSetupProps) {
                 "Continue"
               )}
             </Button>
-          </>
-        )}
-
-        {step === "verify" && (
-          <>
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full mx-auto flex items-center justify-center">
-                <AlertCircle className="w-8 h-8 text-yellow-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Check your email</h3>
-                <p className="text-sm text-muted-foreground">
-                  We sent a verification link to <strong>{email}</strong>. Click the link to complete setup.
-                </p>
-              </div>
-            </div>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <Button
-              onClick={handleVerificationComplete}
-              disabled={isLoading}
-              className="w-full bg-transparent"
-              variant="outline"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Verifying...
-                </>
-              ) : (
-                "I've verified my email"
-              )}
-            </Button>
-
-            <div className="text-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setStep("email")}
-                className="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Use different email
-              </Button>
-            </div>
           </>
         )}
 

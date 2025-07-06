@@ -10,6 +10,7 @@ import { DeployCollection } from "@/components/deploy-collection"
 import { StepOne } from "@/components/generator/step-one"
 import { ExportUploadStep } from "@/components/generator/export-upload-step"
 import { GeneratorHeader } from "@/components/generator/generator-header"
+import { toast } from "sonner"
 
 interface Trait {
   id: string
@@ -307,7 +308,11 @@ export default function NFTGenerator() {
   const handleGenerateNFTs = () => {
     const maxPossible = calculateMaxNFTs()
     if (collectionSettings.size > maxPossible) {
-      setShowSizeWarning(true)
+      toast.error(
+        `Collection size exceeds maximum combinations (${maxPossible})`,{
+          description: "Please reduce the collection size to a value that is less than or equal to the maximum possible combinations.",
+        }
+      )
       return
     }
     setShowSizeWarning(false)

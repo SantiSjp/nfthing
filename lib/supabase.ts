@@ -30,6 +30,11 @@ export async function getCollectionsByCreator(creator: string): Promise<any[] | 
     return getCollections({ filter: { creator } })
 }
 
+export async function getCollectionById(id: string): Promise<any | null> {
+    const data = await getCollections({ filter: { id: Number(id) } })
+    return data && data.length > 0 ? data[0] : null
+}
+
 // Função para inserir uma nova coleção
 export async function insertCollection(collection: Partial<Database['public']['Tables']['collections']['Insert']>): Promise<any> {
     const { data, error } = await supabase

@@ -457,11 +457,6 @@ export function StepOne({
                       }
                       className="h-8 text-sm"
                     />
-                    {showSizeWarning && (
-                      <p className="text-xs text-red-500">
-                        Collection size exceeds maximum possible combinations ({maxPossibleNFTs})
-                      </p>
-                    )}
                   </div>
 
                   <div className="flex gap-2">

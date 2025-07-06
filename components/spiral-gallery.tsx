@@ -205,7 +205,7 @@ export default function Component() {
       {/* Header Navigation */}
       <header className="relative z-50 grid grid-cols-3 items-center p-6">
         <div className="flex items-center space-x-2">
-          <img src="/logo-4.png" alt="nfthing" className="w-20 h-5" />
+          <img src="/logo_preta.png" alt="nfthing" className="w-25 h-10" />
         </div>
 
         <nav className="hidden md:flex items-center space-x-8 justify-center">
@@ -287,7 +287,7 @@ export default function Component() {
             className={`glitch-text text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight cursor-pointer text-white ${titleHovered || autoGlitch ? "glitch-active" : ""}`}
             data-text="nfthing"
           >
-            <img src="/logo-4.png" alt="nfthing" className="w-100 h-30" />
+            <img src="/logo_preta.png" alt="nfthing" className="w-100 h-40" />
           </h1>
         </div>
 

@@ -3,6 +3,8 @@ import ConnectButton from "../ConnectButton"
 import { ModeToggle } from "../toogle"
 import { useTheme } from "next-themes"
 import React, { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 interface GeneratorHeaderProps {
   currentStep: number
@@ -14,6 +16,7 @@ interface GeneratorHeaderProps {
 export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onStepClick }: GeneratorHeaderProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const router = useRouter()
 
   useEffect(() => {
     setMounted(true);
@@ -29,8 +32,8 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
               <img
                 src={
                   theme === "dark"
-                    ? "/logo-4.png"
-                    : "/logo-3.png"
+                    ? "/logo_preta.png"
+                    : "/logo_branca.png"
                 }
                 alt="NFThing Logo"
                 className="h-10 w-30 object-contain"
@@ -174,7 +177,7 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
 
           {/* Theme Toggle */}
           <ConnectButton />
-          <ModeToggle />
+          <Button variant="ghost" onClick={() => router.push('/')} className="text-white">Back</Button>
         </div>
       </div>
     </div>

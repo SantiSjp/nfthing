@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import ContextProvider from "@/context";
 import { headers } from "next/headers";
+import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,6 +57,7 @@ export default async function RootLayout({
           >
             <ContextProvider cookies={cookies}>
               {children}
+              <Toaster position="top-center" />
             </ContextProvider>
           </ThemeProvider>
       </body>

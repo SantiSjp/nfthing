@@ -13,6 +13,7 @@ import { parseUnits } from "viem/utils"
 import { toast } from 'sonner';
 import { insertCollection } from "@/lib/supabase";
 import { useAccount } from "wagmi";
+import { web3StorageClient } from "@/lib/web3-storage";
 
 interface DeployCollectionProps {
   baseURI: string
@@ -46,6 +47,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
   const [isDeploying, setIsDeploying] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [txHash, setTxHash] = useState<string | null>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
 
   const { createCollection, isPending } = useCreateCollection()
   const { address } = useAccount();
@@ -103,29 +105,48 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
     setErrors({})
 
     try {
+      let imageUrl = "";
+      if (imageFile) {
+        try {
+          const result = await web3StorageClient.uploadFile(imageFile);
+          imageUrl = `https://${result.cid}.ipfs.w3s.link`;
+        } catch (err) {
+          toast.error("Erro ao fazer upload da imagem");
+          setIsDeploying(false);
+          return;
+        }
+      }
+
       const txHash = await createCollection({
         ...formData,
         price: parseUnits(formData.price.toString(), 18),
       })
       setTxHash(txHash)
-      toast.dismiss(loadingToast);
-      toast.success('Collection deployed successfully!', {
-        duration: 4000,
-        icon: '✅',
-      });
-      // Salvar no Supabase
-      await insertCollection({
-        name: formData.name,
-        symbol: formData.symbol,
-        baseUri: formData.baseURI,
-        royalty: formData.royaltyBps.toString(),
-        price: formData.price,
-        supply: formData.maxSupply,
-        maxPerWallet: formData.maxPerWallet,
-        created_at: new Date().toISOString(),
-        creator: address,
-      });
-      onDeploy(formData)
+      // Salvar no Supabase APÓS o deploy dar certo
+      try {
+        await insertCollection({
+          name: formData.name,
+          symbol: formData.symbol,
+          baseUri: formData.baseURI,
+          royalty: formData.royaltyBps.toString(),
+          price: formData.price,
+          supply: formData.maxSupply,
+          maxPerWallet: formData.maxPerWallet,
+          created_at: new Date().toISOString(),
+          creator: address,
+          image: imageUrl,
+        });
+        toast.dismiss(loadingToast);
+        toast.success('Collection deployed successfully!', {
+          duration: 4000,
+          icon: '✅',
+        });
+        onDeploy(formData)
+      } catch (dbErr: any) {
+        toast.dismiss(loadingToast);
+        toast.error('Deploy realizado, mas houve erro ao salvar no banco.');
+        setErrors({ general: dbErr.message || "Erro ao salvar no banco" })
+      }
     } catch (err: any) {
       toast.dismiss(loadingToast);
       toast.error('Failed to deploy collection.');
@@ -171,7 +192,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="relative">
-                  <Label htmlFor="name">Collection Name *</Label>
+                  <Label htmlFor="name" className="mb-2">Collection Name *</Label>
                   <div className="relative">
                     <Input
                       id="name"
@@ -188,7 +209,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
                 </div>
 
                 <div className="relative">
-                  <Label htmlFor="symbol">Symbol *</Label>
+                  <Label htmlFor="symbol" className="mb-2">Symbol *</Label>
                   <div className="relative">
                     <Input
                       id="symbol"
@@ -207,7 +228,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
               </div>
 
               <div className="relative">
-                <Label htmlFor="baseURI">Base URI *</Label>
+                <Label htmlFor="baseURI" className="mb-2">Base URI *</Label>
                 <div className="relative">
                   <Input
                     id="baseURI"
@@ -225,6 +246,17 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
                   This URL will be used to fetch metadata for each NFT
                 </p>
               </div>
+
+              <div className="relative">
+                <Label htmlFor="collectionImage" className="mb-2">Collection Image *</Label>
+                <Input
+                  id="collectionImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                  className="pl-10"
+                />
+              </div>
             </CardContent>
           </Card>
 
@@ -241,7 +273,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="relative">
-                  <Label htmlFor="royaltyBps">Royalty BPS *</Label>
+                  <Label htmlFor="royaltyBps" className="mb-2">Royalty BPS *</Label>
                   <div className="relative">
                     <Input
                       id="royaltyBps"
@@ -262,7 +294,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
                 </div>
 
                 <div className="relative">
-                  <Label htmlFor="royaltyReceiver">Royalty Receiver *</Label>
+                  <Label htmlFor="royaltyReceiver" className="mb-2">Royalty Receiver *</Label>
                   <div className="relative">
                     <Input
                       id="royaltyReceiver"
@@ -297,7 +329,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="relative">
-                  <Label htmlFor="maxSupply">Max Supply *</Label>
+                  <Label htmlFor="maxSupply" className="mb-2">Max Supply *</Label>
                   <div className="relative">
                     <Input
                       id="maxSupply"
@@ -316,7 +348,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
                 </div>
 
                 <div className="relative">
-                  <Label htmlFor="price">Price (MON) *</Label>
+                  <Label htmlFor="price" className="mb-2">Price (MON) *</Label>
                   <div className="relative">
                     <Input
                       id="price"
@@ -336,7 +368,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
                 </div>
 
                 <div className="relative">
-                  <Label htmlFor="maxPerWallet">Max Per Wallet *</Label>
+                  <Label htmlFor="maxPerWallet" className="mb-2">Max Per Wallet *</Label>
                   <div className="relative">
                     <Input
                       id="maxPerWallet"

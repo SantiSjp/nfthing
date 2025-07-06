@@ -16,6 +16,7 @@ export type Database = {
           creator: string | null
           floorPrice: string | null
           id: number
+          image: string | null
           likes: number | null
           maxPerWallet: number | null
           mintIsActive: boolean | null
@@ -33,6 +34,7 @@ export type Database = {
           creator?: string | null
           floorPrice?: string | null
           id?: number
+          image?: string | null
           likes?: number | null
           maxPerWallet?: number | null
           mintIsActive?: boolean | null
@@ -50,6 +52,7 @@ export type Database = {
           creator?: string | null
           floorPrice?: string | null
           id?: number
+          image?: string | null
           likes?: number | null
           maxPerWallet?: number | null
           mintIsActive?: boolean | null

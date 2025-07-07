@@ -45,3 +45,14 @@ export async function insertCollection(collection: Partial<Database['public']['T
     if (error) throw new Error(error.message);
     return data;
 }
+
+export async function updateMintIsActive(id: number, mintIsActive: boolean): Promise<any> {
+    const { data, error } = await supabase
+        .from('collections')
+        .update({ mintIsActive })
+        .eq('id', id)
+        .select()
+        .single();
+    if (error) throw new Error(error.message);
+    return data;
+}

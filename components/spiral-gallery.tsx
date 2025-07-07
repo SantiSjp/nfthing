@@ -275,7 +275,7 @@ export default function Component() {
 
         <nav className="hidden md:flex items-center space-x-8 justify-center">
           <a
-            href="#"
+            href="/explorer"
             className={`hover:opacity-70 transition-colors font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}
           >
             Explore
@@ -315,7 +315,7 @@ export default function Component() {
           </div>
           <nav className="flex flex-col items-center gap-8 mt-8">
             <a
-              href="#"
+              href="/explorer"
               className="text-white text-xl font-medium hover:opacity-70"
               onClick={() => setMobileMenuOpen(false)}
             >

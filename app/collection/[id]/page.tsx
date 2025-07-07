@@ -2,11 +2,15 @@
 
 import { useEffect, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
-import { getCollectionById } from "@/lib/supabase"
+import { getCollectionById, updateMintIsActive } from "@/lib/supabase"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useThemeLogo } from "@/hooks/useTheme"
 import { ModeToggle } from "@/components/toogle"
+import ConnectButton from "@/components/ConnectButton"
+import { useAccount, useWriteContract } from 'wagmi'
+import { collectionAbi } from '@/lib/collectionAbi'
+import { monadTestnet } from 'viem/chains'
 
 interface Collection {
   id: string
@@ -19,6 +23,7 @@ interface Collection {
   likes: number
   image: string
   creator: string
+  contract: string
   status: "open" | "closed"
 }
 
@@ -28,6 +33,9 @@ export default function CollectionDetailPage() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { logo } = useThemeLogo()
+  const [activating, setActivating] = useState(false)
+  const { address } = useAccount();
+  const { writeContractAsync } = useWriteContract();
 
   useEffect(() => {
     if (!id) return
@@ -47,10 +55,39 @@ export default function CollectionDetailPage() {
           image: c.image || "/placeholder.svg?height=300&width=300",
           creator: c.creator || "",
           status: c.mintIsActive === false ? "closed" : "open",
+          contract: c.contract || "",
         })
       })
       .finally(() => setLoading(false))
   }, [id])
+
+  // Função para alternar o mint
+  async function handleToggleMint() {
+    if (!collection) return
+    if (!collection.contract) {
+      alert('Endereço do contrato não encontrado.')
+      return
+    }
+    setActivating(true)
+    const newStatus = collection.status === 'open' ? false : true;
+    try {
+      // Chamada on-chain para setMintActive
+      await writeContractAsync({
+        abi: collectionAbi,
+        address: collection.contract as `0x${string}`,
+        functionName: 'setMintActive',
+        args: [newStatus],
+        chain: monadTestnet,
+      })
+      // Após sucesso on-chain, atualiza o banco
+      await updateMintIsActive(Number(collection.id), newStatus)
+      setCollection({ ...collection, status: newStatus ? 'open' : 'closed' })
+    } catch (e: any) {
+      alert(e?.shortMessage || e?.message || 'Erro ao alternar o mint')
+    } finally {
+      setActivating(false)
+    }
+  }
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading collection...</div>
@@ -66,8 +103,9 @@ export default function CollectionDetailPage() {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <img src={logo} alt="nfthing" className="h-10 w-30 object-contain" />
           <div className="flex items-center space-x-4">
-            <ModeToggle />
             <Button variant="ghost" onClick={() => router.back()} className="text-white">Back</Button>
+            <ConnectButton />
+            <ModeToggle />
           </div>
         </div>
       </header>
@@ -90,7 +128,9 @@ export default function CollectionDetailPage() {
             {collection.status === "open" ? (
               <Badge className="bg-yellow-600/80 text-yellow-100 border-0">Mint Open</Badge>
             ) : (
-              <Badge className="bg-red-600/80 text-red-100 border-0">Mint Closed</Badge>
+              <div className="flex items-center gap-2">
+                <Badge className="bg-red-600/80 text-red-100 border-0">Mint Closed</Badge>                
+              </div>
             )}
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -107,9 +147,14 @@ export default function CollectionDetailPage() {
             <p className="text-gray-300">{collection.description}</p>
             <div className="flex items-center space-x-4 text-sm text-gray-400">
               <span>Supply: {collection.itemCount}</span>
-              <span>{collection.likes} likes</span>
-            </div>
+                <span>{collection.likes} likes</span>
+              </div>              
           </div>
+          <div className="flex  items-end justify-end">
+                <Button size="sm" onClick={handleToggleMint} disabled={activating} className="">
+                  {activating ? (collection.status === 'open' ? "Desativando..." : "Ativando...") : (collection.status === 'open' ? "Desativar Mint" : "Ativar Mint")}
+                </Button>
+              </div>
         </div>
       </main>
     </div>

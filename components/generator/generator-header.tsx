@@ -173,10 +173,11 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
             </div>
           </div>
 
-          {/* Theme Toggle */}
-          <ModeToggle />
-          <ConnectButton />
-          <Button variant="ghost" onClick={() => router.push('/')} className="text-white">Back</Button>
+          <div className="flex items-center space-x-4">
+              <Button variant="ghost" onClick={() => router.push('/')} className="text-white">Back</Button>
+              <ConnectButton />
+              <ModeToggle />
+            </div>
         </div>
       </div>
     </div>

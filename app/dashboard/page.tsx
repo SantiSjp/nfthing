@@ -83,9 +83,9 @@ export default function CollectionsManager() {
               <img src={logo} alt="nfthing" className="h-10 w-30 object-contain" />              
             </div>
             <div className="flex items-center space-x-4">
-              <ModeToggle />
-              <ConnectButton />
               <Button variant="ghost" onClick={() => router.push('/')} className="text-white">Back</Button>
+              <ConnectButton />
+              <ModeToggle />
             </div>
             
           </div>
@@ -96,29 +96,33 @@ export default function CollectionsManager() {
       <main className="container mx-auto px-6 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-4xl font-bold mb-2">Creator Dashboard</h2>
-              <p className="text-gray-400 text-lg">create and manage your digital masterpieces</p>
+          <div className="flex items-end justify-center mb-6 gap-8 flex-wrap">
+            {/* Esquerda: Título, subtítulo e busca */}
+            <div className="flex flex-col gap-4 max-w-xl flex-1 min-w-[300px]">
+              <h1 className="text-5xl font-bold ">Creator Dashboard</h1>
+              <p className="text-xl leading-relaxed">
+                Create and manage your digital masterpieces with elegance and precision
+              </p>
+              <div className="relative max-w-md w-full mt-2">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search collections..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-gray-900/50 border-gray-800 text-white"
+                />
+              </div>
             </div>
-            <Button 
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
-              onClick={() => window.location.href = '/generator'}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Collection
-            </Button>
-          </div>
-
-          {/* Search */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search collections..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-gray-900/50 border-gray-800 text-white"
-            />
+            {/* Direita: Botão */}
+            <div className="flex items-center justify-end flex-1 min-w-[220px] mt-6 sm:mt-0">
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 w-full sm:w-auto"
+                onClick={() => window.location.href = '/generator'}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Collection
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -187,7 +191,7 @@ export default function CollectionsManager() {
       {/* Collection Detail Modal */}
       {selectedCollection && (
         <Dialog open={!!selectedCollection} onOpenChange={() => setSelectedCollection(null)}>
-          <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-4xl p-0 w-full">
+          <DialogContent className="bg-black border-gray-700 text-white max-w-5xl p-0 w-full">
             <div className="flex flex-col md:flex-row">
               {/* Image Section */}
               <div className="flex-1 p-6 flex items-center justify-center">

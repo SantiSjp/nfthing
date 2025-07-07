@@ -3,8 +3,8 @@ export default function ConnectButton() {
         <div
             style={{
                 background: '#18181b', // preto escuro
-                borderRadius: '0.75rem', // mais retangular, mas ainda arredondado
-                padding: '2px 6px',    // máxima compactação
+                borderRadius: '1rem', // mais retangular, mas ainda arredondado
+                padding: '1px 1px',    // máxima compactação
                 display: 'inline-block',
             }}
         >

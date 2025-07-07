@@ -5,6 +5,7 @@ import { useTheme } from "next-themes"
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { useThemeLogo } from "@/hooks/useTheme"
 
 interface GeneratorHeaderProps {
   currentStep: number
@@ -17,6 +18,7 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const router = useRouter()
+  const { logo } = useThemeLogo()
 
   useEffect(() => {
     setMounted(true);
@@ -30,11 +32,7 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
           <div className="flex items-center space-x-2">
             {mounted && (
               <img
-                src={
-                  theme === "dark"
-                    ? "/logo_branca.png"
-                    : "/logo_branca.png"
-                }
+                src={logo}
                 alt="NFThing Logo"
                 className="h-15 w-20 object-contain"
               />
@@ -49,7 +47,7 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
               onClick={() => onStepClick(1)}
             >
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-colors ${
+                className={`flex h-8 w-8 items-center justify-center rounded-md border-2 transition-colors ${
                   currentStep === 1
                     ? "bg-blue-600 border-blue-600 text-white"
                     : currentStep > 1
@@ -79,7 +77,7 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
               onClick={() => generatedNFTs.length > 0 && onStepClick(2)}
             >
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-colors ${
+                className={`flex h-8 w-8 items-center justify-center rounded-md border-2 transition-colors ${
                   currentStep === 2
                     ? "bg-blue-600 border-blue-600 text-white"
                     : currentStep > 2
@@ -117,7 +115,7 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
               onClick={() => generatedNFTs.length > 0 && onStepClick(3)}
             >
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-colors ${
+                className={`flex h-8 w-8 items-center justify-center rounded-md border-2 transition-colors ${
                   currentStep === 3
                     ? "bg-blue-600 border-blue-600 text-white"
                     : currentStep > 3
@@ -155,7 +153,7 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
               onClick={() => uploadResults && onStepClick(4)}
             >
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-colors ${
+                className={`flex h-8 w-8 items-center justify-center rounded-md border-2 transition-colors ${
                   currentStep === 4
                     ? "bg-blue-600 border-blue-600 text-white"
                     : uploadResults
@@ -176,6 +174,7 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
           </div>
 
           {/* Theme Toggle */}
+          <ModeToggle />
           <ConnectButton />
           <Button variant="ghost" onClick={() => router.push('/')} className="text-white">Back</Button>
         </div>

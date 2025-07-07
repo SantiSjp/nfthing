@@ -14,6 +14,7 @@ import { useAccount } from "wagmi"
 import { ModeToggle } from "@/components/toogle"
 import router from "next/router"
 import { useRouter } from "next/navigation"
+import { useThemeLogo } from "@/hooks/useTheme"
 
 interface Collection {
   id: string
@@ -36,6 +37,7 @@ export default function CollectionsManager() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null)
   const router = useRouter()
+  const { logo } = useThemeLogo()
   
   useEffect(() => {
     if (!address) {
@@ -78,9 +80,10 @@ export default function CollectionsManager() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
-              <img src="/logo_branca.png" alt="nfthing" className="h-10 w-30 object-contain" />              
+              <img src={logo} alt="nfthing" className="h-10 w-30 object-contain" />              
             </div>
             <div className="flex items-center space-x-4">
+              <ModeToggle />
               <ConnectButton />
               <Button variant="ghost" onClick={() => router.push('/')} className="text-white">Back</Button>
             </div>

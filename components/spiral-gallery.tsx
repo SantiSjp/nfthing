@@ -59,6 +59,31 @@ const realImages = [
   "/images/yellow-spiral-smiley.jpg",
   "/images/checkered-mouth-yellow.jpg",
   "/images/colorful-hands-unity.jpg",
+  "/images/1.jpg",
+  "/images/2.jpg",
+  "/images/3.jpg",
+  "/images/4.jpg",
+  "/images/5.jpg",
+  "/images/6.jpg",
+  "/images/7.jpg",
+  "/images/8.jpg",
+  "/images/9.jpg",
+  "/images/10.jpg",
+  "/images/11.jpg",
+  "/images/12.jpg",
+  "/images/13.jpg",
+  "/images/14.jpg",
+  "/images/15.jpg",
+  "/images/16.jpg",
+  "/images/17.jpg",
+  "/images/18.jpg",
+  "/images/19.jpg",
+  "/images/20.jpg",
+  "/images/21.jpg",
+  "/images/22.jpg",
+  "/images/23.jpg",
+  "/images/24.jpg",
+  "/images/25.jpg",
 ]
 
 function generateTunnelLayers() {
@@ -86,7 +111,6 @@ function generateTunnelLayers() {
       const maxDistance = 1600
       const perspectiveIntensity = Math.min(distanceFromCenter / maxDistance, 1)
 
-      const useRealImage = Math.random() < 0.8
       const imageIndex = Math.floor(Math.random() * realImages.length)
 
       layers.push({
@@ -102,7 +126,6 @@ function generateTunnelLayers() {
         opacity: Math.max(0.85 - layer * 0.03, 0.1),
         perspectiveIntensity,
         angleToCenter: Math.atan2(y, x) * (180 / Math.PI),
-        useRealImage,
         imageIndex,
       })
     }
@@ -114,10 +137,15 @@ function generateTunnelLayers() {
 export default function Component() {
   const [titleHovered, setTitleHovered] = useState(false)
   const [autoGlitch, setAutoGlitch] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(true)
   const [currentPage, setCurrentPage] = useState<"home" | "discover" | "artist">("home")
   const [rectangles, setRectangles] = useState<any[]>([])
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const logo = "/logo_branca.png"
+  const isDarkMode = false
+  const [isLogoHovered, setIsLogoHovered] = useState(false)
+  const [visibleLayers, setVisibleLayers] = useState(0)
+  const totalLayers = 20
+  const [lastAngle, setLastAngle] = useState<number | null>(null)
 
   // Auto glitch effect every 8-12 seconds
   useEffect(() => {
@@ -127,7 +155,7 @@ export default function Component() {
     }
 
     const randomInterval = () => {
-      const delay = Math.random() * 4000 + 8000
+      const delay = 1000
       setTimeout(() => {
         triggerAutoGlitch()
         randomInterval()
@@ -139,16 +167,57 @@ export default function Component() {
 
   useEffect(() => {
     setRectangles(generateTunnelLayers())
-    const interval = setInterval(() => {
-      setRectangles(generateTunnelLayers())
-    }, 2000) // Atualiza a cada 2 segundos
-    return () => clearInterval(interval)
   }, [])
+ 
+  useEffect(() => {
+    if (rectangles.length === 0) return;
+    const interval = setInterval(() => {
+      setRectangles(rects =>
+        rects.map(rect => ({
+          ...rect,
+          imageIndex: Math.floor(Math.random() * realImages.length),
+        }))
+      );
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [rectangles.length]);
 
   return (
-    <div className="min-h-screen overflow-hidden relative bg-black">
-      {/* Background Tunnel - Show in both modes */}
-      <div className={`absolute inset-0 ${isDarkMode ? "opacity-50" : "opacity-30"}`}>
+    <div
+      className="min-h-screen overflow-hidden relative bg-white"
+      onMouseEnter={e => {
+        setIsLogoHovered(true)
+        if (visibleLayers === 0) {
+          setVisibleLayers(1)
+          setLastAngle(null)
+        }
+      }}
+      onMouseMove={e => {
+        if (visibleLayers >= totalLayers) return;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        const dx = mouseX - centerX;
+        const dy = mouseY - centerY;
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (lastAngle !== null) {
+          let delta = angle - lastAngle;
+          if (delta > 180) delta -= 360;
+          if (delta < -180) delta += 360;
+          if (delta > 0) {
+            setVisibleLayers(prev => (prev < totalLayers ? prev + 1 : prev));
+          }
+        }
+        setLastAngle(angle);
+      }}
+      onMouseLeave={() => {}}
+    >
+      {/* Background Tunnel - Show only on logo hover */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-1000 ${visibleLayers > 0 ? 'opacity-90' : 'opacity-0 pointer-events-none'}`}
+      >
         <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ perspective: "2200px", perspectiveOrigin: "center center" }}
@@ -157,7 +226,7 @@ export default function Component() {
             className="relative preserve-3d"
             style={{ transformStyle: "preserve-3d", transform: "rotateX(0deg) rotateY(0deg)" }}
           >
-            {rectangles.map((rect) => {
+            {rectangles.filter(rect => rect.layer >= totalLayers - visibleLayers).map((rect) => {
               const perspectiveSkew = rect.perspectiveIntensity * 8
 
               return (
@@ -168,7 +237,7 @@ export default function Component() {
                     transform: `translate3d(${rect.x}px, ${rect.y}px, ${rect.z}px) rotateZ(${rect.rotation}deg)`,
                     transformStyle: "preserve-3d",
                     width: `${rect.size}px`,
-                    height: `${rect.size * 0.75}px`,
+                    height: `${rect.size}px`,
                     opacity: rect.opacity,
                   }}
                 >
@@ -182,18 +251,14 @@ export default function Component() {
                       clipPath: `polygon(${perspectiveSkew * 0.3}% 0%, ${100 - perspectiveSkew * 0.3}% 0%, ${100 - perspectiveSkew * 0.2}% 100%, ${perspectiveSkew * 0.2}% 100%)`,
                     }}
                   >
-                    {rect.useRealImage ? (
-                      <Image
-                        src={realImages[rect.imageIndex] || "/placeholder.svg"}
-                        alt={`Artwork ${rect.imageIndex + 1}`}
-                        fill
-                        className="object-cover"
-                        style={{ transform: "rotate(90deg)" }}
-                        sizes="250px"
-                      />
-                    ) : (
-                      <div className={`w-full h-full ${isDarkMode ? "bg-gray-800" : "bg-gray-300"}`} />
-                    )}
+                    <Image
+                      src={realImages[rect.imageIndex] && realImages[rect.imageIndex].endsWith('.jpg') ? realImages[rect.imageIndex] : "/images/1.jpg"}
+                      alt={`Artwork ${rect.imageIndex + 1}`}
+                      fill
+                      className="object-cover"
+                      style={{ transform: "rotate(90deg)" }}
+                      sizes="250px"
+                    />
                   </div>
                 </div>
               )
@@ -203,9 +268,9 @@ export default function Component() {
       </div>
 
       {/* Header Navigation */}
-      <header className="relative z-50 grid grid-cols-3 items-center p-6 bg-black/70 shadow-lg backdrop-blur-md rounded-b-xl">
+      <header className="relative z-50 grid grid-cols-3 items-center p-6">
         <div className="flex items-center space-x-2">
-          <img src="/logo_branca.png" alt="nfthing" className="w-25 h-10" />
+          <img src={logo} alt="nfthing" className="w-25 h-10" />
         </div>
 
         <nav className="hidden md:flex items-center space-x-8 justify-center">
@@ -233,7 +298,6 @@ export default function Component() {
           <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10" onClick={() => setMobileMenuOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
-          <ConnectButton />
         </div>
       </header>
 
@@ -278,27 +342,19 @@ export default function Component() {
 
       {/* Hero Section */}
       <main className="relative z-40 flex flex-col items-center justify-center min-h-[calc(100vh-120px)] text-center px-6">
-        <div
-          className="glitch-container mb-6"
-          onMouseEnter={() => setTitleHovered(true)}
-          onMouseLeave={() => setTitleHovered(false)}
-        >
-          <h1
-            className={`glitch-text text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight cursor-pointer text-white ${titleHovered || autoGlitch ? "glitch-active" : ""}`}
-            data-text="nfthing"
-          >
-            <img src="/logo_branca.png" alt="nfthing" className="w-100 h-40" />
+        <div className="mb-6">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white">
+            <img 
+              src={logo} 
+              alt="nfthing" 
+              className="w-100 h-40"
+              style={{cursor: 'pointer'}}
+            />
           </h1>
         </div>
 
         <h2
-          className="text-xl md:text-2xl lg:text-3xl font-semibold mb-8"
-          style={{
-            background: "linear-gradient(90deg, #ff0000 0%, #ffff00 25%, #00ff00 50%, #0000ff 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
+          className={`text-xl md:text-2xl lg:text-3xl font-semibold mb-8 ${isDarkMode ? 'text-white' : 'text-black'}`}
         >
           for creators and NFT lovers
         </h2>
@@ -306,7 +362,7 @@ export default function Component() {
         <p
           className={`text-lg md:text-xl max-w-2xl mb-12 leading-relaxed ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}
         >
-          create, discover, and trade unique digital assets in Monad Testnet
+          create, deploy and make your mint page on monad testnet
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">

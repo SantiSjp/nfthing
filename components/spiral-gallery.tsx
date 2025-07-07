@@ -168,7 +168,7 @@ export default function Component() {
   useEffect(() => {
     setRectangles(generateTunnelLayers())
   }, [])
-
+ 
   useEffect(() => {
     if (rectangles.length === 0) return;
     const interval = setInterval(() => {

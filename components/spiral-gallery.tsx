@@ -155,7 +155,7 @@ export default function Component() {
     }
 
     const randomInterval = () => {
-      const delay = Math.random() * 4000 + 8000
+      const delay = 1000
       setTimeout(() => {
         triggerAutoGlitch()
         randomInterval()
@@ -168,6 +168,20 @@ export default function Component() {
   useEffect(() => {
     setRectangles(generateTunnelLayers())
   }, [])
+
+  useEffect(() => {
+    if (rectangles.length === 0) return;
+    const interval = setInterval(() => {
+      setRectangles(rects =>
+        rects.map(rect => ({
+          ...rect,
+          imageIndex: Math.floor(Math.random() * realImages.length),
+        }))
+      );
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [rectangles.length]);
 
   return (
     <div

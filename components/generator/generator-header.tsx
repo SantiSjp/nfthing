@@ -55,7 +55,7 @@ export function GeneratorHeader({ currentStep, generatedNFTs, uploadResults, onS
                       : "border-gray-300 bg-white text-gray-500"
                 }`}
               >
-                <span className="text-sm font-medium">{currentStep > 1 ? "✓" : "1"}</span>
+                <span className="text-sm font-medium text-white">{currentStep > 1 ? "✓" : "1"}</span>
               </div>
               <div
                 className={`text-sm font-medium transition-colors ${

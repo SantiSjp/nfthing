@@ -720,7 +720,7 @@ export default function NFTGenerator() {
                 <div className="col-span-3 space-y-4">
                 {filteredNFTs.length > 0 && (
                 <div className="flex gap-2">
-                <Button className="w-full text-white bg-blue-600 hover:bg-blue-700" onClick={() => setCurrentStep(3)}>Go to export</Button>
+                <Button className="w-full" onClick={() => setCurrentStep(3)}>Go to export</Button>
               </div>
               )}
                   <Card>

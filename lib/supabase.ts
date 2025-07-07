@@ -56,3 +56,25 @@ export async function updateMintIsActive(id: number, mintIsActive: boolean): Pro
     if (error) throw new Error(error.message);
     return data;
 }
+
+// Função para incrementar o campo 'sales' de uma coleção
+export async function incrementCollectionSales(id: number, increment: number): Promise<any> {
+    // Buscar o valor atual de sales
+    const { data: collection, error: fetchError } = await supabase
+        .from('collections')
+        .select('sales')
+        .eq('id', id)
+        .single();
+    if (fetchError) throw new Error(fetchError.message);
+    const currentSales = collection?.sales ?? 0;
+    const newSales = currentSales + increment;
+    // Atualizar o campo sales
+    const { data, error } = await supabase
+        .from('collections')
+        .update({ sales: newSales })
+        .eq('id', id)
+        .select()
+        .single();
+    if (error) throw new Error(error.message);
+    return data;
+}

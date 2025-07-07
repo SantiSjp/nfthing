@@ -368,7 +368,7 @@ export default function Component() {
         <div className="flex flex-col sm:flex-row gap-4">
           <Button
             size="lg"
-            className={`font-semibold px-8 py-3 text-lg`}
+            className={`bg-black text-white hover:bg-white hover:text-black font-semibold px-8 py-3 text-lg`}
           >
             <Link href="/generator" target="_blank">Get Started</Link>
           </Button>       

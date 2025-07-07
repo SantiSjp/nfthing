@@ -15,6 +15,7 @@ import { insertCollection } from "@/lib/supabase";
 import { useAccount } from "wagmi";
 import { createPublicClient, http } from "viem";
 import { monadTestnet } from "viem/chains";
+import { useRouter } from "next/navigation";
 
 interface DeployCollectionProps {
   baseURI: string
@@ -52,6 +53,7 @@ export function DeployCollection({ baseURI, imageURI, totalSupply, onDeploy }: D
 
   const { createCollection, isPending } = useCreateCollection()
   const { address } = useAccount();
+  const router = useRouter();
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {}
@@ -139,7 +141,7 @@ export function DeployCollection({ baseURI, imageURI, totalSupply, onDeploy }: D
           duration: 4000,
           icon: '✅',
         });
-        onDeploy(formData)
+        onDeploy(formData)       
       } catch (dbErr: any) {
         toast.dismiss(loadingToast);
         toast.error('Deploy realizado, mas houve erro ao salvar no banco.');
@@ -151,6 +153,7 @@ export function DeployCollection({ baseURI, imageURI, totalSupply, onDeploy }: D
       setErrors({ general: err.message || "Erro ao fazer deploy" })
     } finally {
       setIsDeploying(false)
+      router.push('/dashboard');
     }
   }
 

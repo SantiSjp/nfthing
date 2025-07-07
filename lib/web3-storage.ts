@@ -50,6 +50,8 @@ class Web3StorageClient {
     const space = await this.client?.addSpace(proof)
     console.log('[w3up] Space:', space)
     await this.client?.setCurrentSpace(space!.did())
+    console.log('[w3up] Current Space:', this.client?.currentSpace())
+    return true
   }
 
   async uploadFile(file: File): Promise<UploadResult> {

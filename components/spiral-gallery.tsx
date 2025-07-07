@@ -11,7 +11,6 @@ import {
 import Link from "next/link"
 import { ModeToggle } from "./toogle"
 import ConnectButton from "./ConnectButton"
-import { useThemeLogo } from "@/hooks/useTheme"
 
 // Expanded array with all new images
 const realImages = [
@@ -118,8 +117,12 @@ export default function Component() {
   const [currentPage, setCurrentPage] = useState<"home" | "discover" | "artist">("home")
   const [rectangles, setRectangles] = useState<any[]>([])
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { logo, theme, mounted } = useThemeLogo()
-  const isDarkMode = theme === "dark"
+  const logo = "/logo_branca.png"
+  const isDarkMode = false
+  const [isLogoHovered, setIsLogoHovered] = useState(false)
+  const [visibleLayers, setVisibleLayers] = useState(0)
+  const totalLayers = 20
+  const [lastAngle, setLastAngle] = useState<number | null>(null)
 
   // Auto glitch effect every 8-12 seconds
   useEffect(() => {
@@ -141,16 +144,43 @@ export default function Component() {
 
   useEffect(() => {
     setRectangles(generateTunnelLayers())
-    const interval = setInterval(() => {
-      setRectangles(generateTunnelLayers())
-    }, 2000) // Atualiza a cada 2 segundos
-    return () => clearInterval(interval)
   }, [])
 
   return (
-    <div className="min-h-screen overflow-hidden relative bg-black">
-      {/* Background Tunnel - Show in both modes */}
-      <div className={`absolute inset-0 ${isDarkMode ? "opacity-80" : "opacity-90"}`}>
+    <div
+      className="min-h-screen overflow-hidden relative bg-white"
+      onMouseEnter={e => {
+        setIsLogoHovered(true)
+        if (visibleLayers === 0) {
+          setVisibleLayers(1)
+          setLastAngle(null)
+        }
+      }}
+      onMouseMove={e => {
+        if (visibleLayers >= totalLayers) return;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        const dx = mouseX - centerX;
+        const dy = mouseY - centerY;
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (lastAngle !== null) {
+          let delta = angle - lastAngle;
+          if (delta > 180) delta -= 360;
+          if (delta < -180) delta += 360;
+          if (delta > 0) {
+            setVisibleLayers(prev => (prev < totalLayers ? prev + 1 : prev));
+          }
+        }
+        setLastAngle(angle);
+      }}
+      onMouseLeave={() => {}}
+    >
+      {/* Background Tunnel - Show only on logo hover */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-1000 ${visibleLayers > 0 ? 'opacity-90' : 'opacity-0 pointer-events-none'}`}
+      >
         <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ perspective: "2200px", perspectiveOrigin: "center center" }}
@@ -159,7 +189,7 @@ export default function Component() {
             className="relative preserve-3d"
             style={{ transformStyle: "preserve-3d", transform: "rotateX(0deg) rotateY(0deg)" }}
           >
-            {rectangles.map((rect) => {
+            {rectangles.filter(rect => rect.layer >= totalLayers - visibleLayers).map((rect) => {
               const perspectiveSkew = rect.perspectiveIntensity * 8
 
               return (
@@ -235,7 +265,6 @@ export default function Component() {
           <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10" onClick={() => setMobileMenuOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
-          <ModeToggle />
         </div>
       </header>
 
@@ -282,7 +311,12 @@ export default function Component() {
       <main className="relative z-40 flex flex-col items-center justify-center min-h-[calc(100vh-120px)] text-center px-6">
         <div className="mb-6">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white">
-            <img src={logo} alt="nfthing" className="w-100 h-40" />
+            <img 
+              src={logo} 
+              alt="nfthing" 
+              className="w-100 h-40"
+              style={{cursor: 'pointer'}}
+            />
           </h1>
         </div>
 

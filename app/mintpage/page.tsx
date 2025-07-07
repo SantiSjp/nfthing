@@ -510,6 +510,32 @@ export default function MintingPage() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mt-8">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
+            <span>Created by</span>
+            <a 
+              href="https://x.com/gabriell_santi" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline font-medium"
+            >
+              @gabriell_santi
+            </a>
+            <span>and</span>
+            <a 
+              href="https://x.com/shaianeviana" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline font-medium"
+            >
+              @shaianeviana
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 } 

@@ -236,7 +236,6 @@ export default function Component() {
             <Menu className="h-5 w-5" />
           </Button>
           <ModeToggle />
-          <ConnectButton />
         </div>
       </header>
 
@@ -281,15 +280,8 @@ export default function Component() {
 
       {/* Hero Section */}
       <main className="relative z-40 flex flex-col items-center justify-center min-h-[calc(100vh-120px)] text-center px-6">
-        <div
-          className="glitch-container mb-6"
-          onMouseEnter={() => setTitleHovered(true)}
-          onMouseLeave={() => setTitleHovered(false)}
-        >
-          <h1
-            className={`glitch-text text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight cursor-pointer text-white ${titleHovered || autoGlitch ? "glitch-active" : ""}`}
-            data-text="nfthing"
-          >
+        <div className="mb-6">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white">
             <img src={logo} alt="nfthing" className="w-100 h-40" />
           </h1>
         </div>

@@ -392,26 +392,7 @@ export function StepOne({
                     Collection Settings
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-muted-foreground">Collection Name</label>
-                    <Input
-                      value={collectionSettings.name}
-                      onChange={(e) => onCollectionSettingsChange({ ...collectionSettings, name: e.target.value })}
-                      className="h-8 text-sm"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-muted-foreground">Description</label>
-                    <Input
-                      value={collectionSettings.description}
-                      onChange={(e) =>
-                        onCollectionSettingsChange({ ...collectionSettings, description: e.target.value })
-                      }
-                      className="h-8 text-sm"
-                    />
-                  </div>
+                <CardContent className="space-y-4">                
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">

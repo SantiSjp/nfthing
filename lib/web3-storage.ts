@@ -1,9 +1,4 @@
-import { StoreIndexedDB } from '@web3-storage/w3up-client/stores/indexeddb'
-import * as Client from '@storacha/client'
 import * as Web3Client from '@web3-storage/w3up-client'
-import * as Space from '@web3-storage/w3up-client/space'
-import { OwnedSpace } from '@storacha/client/space'
-import { Account } from '@storacha/client/account'
 
 export interface UploadProgress {
   loaded: number
@@ -18,7 +13,6 @@ export interface UploadResult {
 
 class Web3StorageClient {
   private client: Web3Client.Client | undefined
-  private currentSpace: Space.Space | Space.OwnedSpace | undefined
   private account: Web3Client.Account.Account | undefined
   private isInitialized = false
 
@@ -28,9 +22,7 @@ class Web3StorageClient {
     }
 
     if (this.isInitialized && this.client) return true
-
-    const store = new StoreIndexedDB('client')
-    this.client = await Web3Client.create({store})
+    this.client = await Web3Client.create()
 
     this.isInitialized = true
     console.log('[w3up] Client initialized. Agent DID:', this.client?.agent.did())
@@ -52,11 +44,10 @@ class Web3StorageClient {
         const space = await this.client?.createSpace(`NFThing`,{account: this.account})
         console.log('[w3up] Space:', space)
         await this.client?.setCurrentSpace(space!.did())
-        this.currentSpace = space!
+  
       }else{
         console.log('[w3up] Space:', space)
         await this.client?.setCurrentSpace(space!.did())
-        this.currentSpace = space!
       }
       return true
     } catch (error) {
@@ -68,7 +59,7 @@ class Web3StorageClient {
   async uploadFile(file: File): Promise<UploadResult> {
     await this.initialize()
     try {
-      if (!this.currentSpace) throw new Error('No Space set. Authenticate and create or set a Space.')
+      if (!this.client?.currentSpace()) throw new Error('No Space set. Authenticate and create or set a Space.')
       console.log('[w3up] Uploading file:', file.name)
       const cid = await this.client?.uploadFile(file)
       console.log('[w3up] ✅ Upload complete:', cid?.toString())
@@ -86,7 +77,7 @@ class Web3StorageClient {
   async uploadDirectory(files: File[], onProgress?: (progress: UploadProgress) => void): Promise<UploadResult> {
     await this.initialize()
     try {
-      if (!this.currentSpace) throw new Error('No Space set. Authenticate and create or set a Space.')
+      if (!this.client?.currentSpace()) throw new Error('No Space set. Authenticate and create or set a Space.')
 
       const total = files.reduce((acc, file) => acc + file.size, 0)
       console.log('[w3up] Uploading directory:', files)
@@ -114,7 +105,7 @@ class Web3StorageClient {
 
   async uploadJSON(data: any, filename: string): Promise<UploadResult> {
     await this.initialize()
-    if (!this.currentSpace) throw new Error('No Space set.')
+    if (!this.client?.currentSpace()) throw new Error('No Space set.')
 
     const jsonString = JSON.stringify(data, null, 2)
     console.log('[w3up] Uploading JSON:', jsonString)

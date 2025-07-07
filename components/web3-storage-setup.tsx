@@ -78,7 +78,7 @@ export function Web3StorageSetup({ onSetupComplete }: Web3StorageSetupProps) {
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                You'll need a Web3.Storage account to upload your NFTs to IPFS.
+                You&apos;ll need a Web3.Storage account to upload your NFTs to IPFS.
                 <a
                   href="https://console.web3.storage"
                   target="_blank"

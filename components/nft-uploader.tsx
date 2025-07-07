@@ -132,6 +132,8 @@ export function NFTUploader({ nfts, layers, collectionSettings, onUploadComplete
     setUploadProgress(0)
 
     try {
+      await web3StorageClient.InitSpace()
+      console.log('[w3up] Space initialized')
       // Step 1: Generate images
       setCurrentStep("Generating images...")
       const imageFiles: File[] = []

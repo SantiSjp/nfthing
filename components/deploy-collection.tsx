@@ -14,6 +14,8 @@ import { toast } from 'sonner';
 import { insertCollection } from "@/lib/supabase";
 import { useAccount } from "wagmi";
 import { web3StorageClient } from "@/lib/web3-storage";
+import { createPublicClient, http } from "viem";
+import { monadTestnet } from "viem/chains";
 
 interface DeployCollectionProps {
   baseURI: string
@@ -122,8 +124,14 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
         price: parseUnits(formData.price.toString(), 18),
       })
       setTxHash(txHash)
-      // Salvar no Supabase APÓS o deploy dar certo
       try {
+        const publicClient = createPublicClient({
+          chain: monadTestnet,
+          transport: http(),
+        })
+        const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+        const contractAddress = receipt.contractAddress;
+
         await insertCollection({
           name: formData.name,
           symbol: formData.symbol,
@@ -135,6 +143,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
           created_at: new Date().toISOString(),
           creator: address,
           image: imageUrl,
+          contract: contractAddress,
         });
         toast.dismiss(loadingToast);
         toast.success('Collection deployed successfully!', {

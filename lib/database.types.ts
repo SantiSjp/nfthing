@@ -12,6 +12,7 @@ export type Database = {
       collections: {
         Row: {
           baseUri: string | null
+          contract: string | null
           created_at: string
           creator: string | null
           floorPrice: string | null
@@ -30,6 +31,7 @@ export type Database = {
         }
         Insert: {
           baseUri?: string | null
+          contract?: string | null
           created_at: string
           creator?: string | null
           floorPrice?: string | null
@@ -48,6 +50,7 @@ export type Database = {
         }
         Update: {
           baseUri?: string | null
+          contract?: string | null
           created_at?: string
           creator?: string | null
           floorPrice?: string | null

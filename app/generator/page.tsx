@@ -72,7 +72,7 @@ export default function NFTGenerator() {
   const [collectionSettings, setCollectionSettings] = useState<CollectionSettings>({
     name: "My collection",
     description: "Enter description",
-    itemPrefix: "Output ex: 1",
+    itemPrefix: "",
     width: 600,
     height: 600,
     size: 100,
@@ -157,7 +157,7 @@ export default function NFTGenerator() {
     setCollectionSettings({
       name: "My collection",
       description: "Enter description",
-      itemPrefix: "Output ex: 1",
+      itemPrefix: "",
       width: 600,
       height: 600,
       size: 100,

@@ -110,6 +110,7 @@ export function DeployCollection({ baseURI, imageURI, totalSupply, onDeploy }: D
         ...formData,
         price: parseUnits(formData.price.toString(), 18),
       })
+      console.log('[deploy] TxHash:', txHash)
       setTxHash(txHash)
       try {
         const publicClient = createPublicClient({
@@ -117,7 +118,8 @@ export function DeployCollection({ baseURI, imageURI, totalSupply, onDeploy }: D
           transport: http(),
         })
         const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
-        const contractAddress = receipt.contractAddress;
+        console.log('[deploy] Receipt:', receipt)
+        const contractAddress = receipt.logs[0].address;
 
         await insertCollection({
           name: formData.name,

@@ -21,22 +21,22 @@ class Web3StorageClient {
     if (typeof window === "undefined") {
       throw new Error("Web3StorageClient must be used on the client side only.")
     }
-
+  
     if (this.isInitialized) return true
-
-    try{
-      const principal = Signer.parse(process.env.NEXT_PUBLIC_KEY!)
-      console.log('[w3up] Principal:', principal)
-      const client = await Web3Client.create({ principal})          
-      
-      this.client = client
-      this.isInitialized = true 
-      console.log('[w3up] Client initialized. Agent DID:', client.agent.did())
-      return true
-    }catch(error){
-      console.error('[w3up] Error initializing client:', error)
-      throw error
-    }
+  
+    const principal = Signer.parse(process.env.NEXT_PUBLIC_KEY!)
+    const client = await Web3Client.create({ principal })
+    this.client = client
+  
+    const proof = await Proof.parse(process.env.NEXT_PUBLIC_PROOF!)
+    const space = await this.client.addSpace(proof)
+    await this.client.setCurrentSpace(space.did())
+  
+    console.log('[w3up] Agent DID:', client.agent.did())
+    console.log('[w3up] Space DID:', space.did())
+  
+    this.isInitialized = true
+    return true
   }
 
   async InitSpace(){

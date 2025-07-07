@@ -5,7 +5,6 @@ import { useRouter, useParams } from "next/navigation"
 import { getCollectionById } from "@/lib/supabase"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Eye, Heart, ShoppingCart } from "lucide-react"
 
 interface Collection {
   id: string

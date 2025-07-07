@@ -49,7 +49,7 @@ export function Web3StorageModal({
   collectionSettings,
   onUploadComplete,
 }: Web3StorageModalProps) {
-  const [step, setStep] = useState<"warning" | "setup" | "ready">("warning")
+  const [step, setStep] = useState<"warning" | "setup" | "ready">("ready")
 
   const handleSetupComplete = () => {
     setStep("ready")
@@ -155,7 +155,7 @@ export function Web3StorageModal({
 
             <div className="text-center">
               <p className="text-xs text-muted-foreground">
-                Don't have an account? Create one first, then return here to continue.
+                Don&apos;t have an account? Create one first, then return here to continue.
               </p>
             </div>
           </div>
@@ -166,7 +166,7 @@ export function Web3StorageModal({
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Email Verification Required:</strong> We'll send a verification email to authenticate your
+                <strong>Email Verification Required:</strong> We&apos;ll send a verification email to authenticate your
                 Web3.Storage account and enable uploads.
               </AlertDescription>
             </Alert>

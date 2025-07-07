@@ -1,4 +1,5 @@
 import { StoreIndexedDB } from '@web3-storage/w3up-client/stores/indexeddb'
+import { StoreMemory } from '@web3-storage/w3up-client/stores/memory'
 
 export interface UploadProgress {
   loaded: number
@@ -53,15 +54,19 @@ class Web3StorageClient {
     }
 
     try {
-
-      const space = await this.client.createSpace(`NFThing_${Date.now().toString().slice(-8)}`,{account: this.account})
-      console.log('[w3up] Space created:', space.did())
-
       const spaces = await this.client.spaces()
-      console.log('[w3up] Spaces:', spaces)
+      if(spaces.length === 0) 
+      {
+        const space = await this.client.createSpace(`NFThing_${Date.now().toString().slice(-8)}`,{account: this.account})
+        console.log('[w3up] Space created:', space.did())
+      }
+      else
+      {
+        this.client.setCurrentSpace(spaces[0].did())
+        this.currentSpace = spaces[0]
+      }
 
-      this.client.setCurrentSpace(spaces[0].did())
-      this.currentSpace = spaces[0]
+      console.log('[w3up] Spaces:', spaces)
 
       return true
     } catch (error) {
@@ -70,62 +75,58 @@ class Web3StorageClient {
     }
   }
 
-  async checkProofs() {
-    if (!this.client) throw new Error('Client not initialized.')
-
-    const proofs = await this.client.proofs()
-    console.log('[w3up] 🔑 Proofs:', proofs)
-
-    const relevant = proofs.filter((p: any) =>
-      p.capabilities.some((cap: any) => cap.can.includes('space/index/add'))
-    )
-
-    console.log('[w3up] ✅ Relevant proofs for space/index/add:', relevant)
-    return relevant
-  }
-
   async uploadFile(file: File, onProgress?: (progress: UploadProgress) => void): Promise<UploadResult> {
     await this.initialize()
-    if (!this.currentSpace) throw new Error('No Space set. Authenticate and create or set a Space.')
+    try {
+      if (!this.currentSpace) throw new Error('No Space set. Authenticate and create or set a Space.')
 
-    const total = file.size
-
-    const cid = await this.client.uploadFile(file, {
-      onShardStored: () => {
-        if (onProgress) {
-          onProgress({ loaded: total, total, percentage: 100 })
+      const total = file.size
+      console.log('[w3up] Uploading file:', file.name)
+      const cid = await this.client.uploadFile(file, {
+        onShardStored: () => {
+          if (onProgress) {
+            onProgress({ loaded: total, total, percentage: 100 })
+          }
         }
+      })
+
+      console.log('[w3up] ✅ Upload complete:', cid.toString())
+
+      return {
+        cid: cid.toString(),
+          url: `https://${cid.toString()}.ipfs.w3s.link/${file.name}`,
       }
-    })
-
-    console.log('[w3up] ✅ Upload complete:', cid.toString())
-
-    return {
-      cid: cid.toString(),
-      url: `https://${cid.toString()}.ipfs.w3s.link/${file.name}`,
+    } catch (error) {
+      console.error('Web3StorageClient uploadFile error:', error)
+      throw error
     }
   }
 
   async uploadDirectory(files: File[], onProgress?: (progress: UploadProgress) => void): Promise<UploadResult> {
     await this.initialize()
-    if (!this.currentSpace) throw new Error('No Space set. Authenticate and create or set a Space.')
+    try {
+      if (!this.currentSpace) throw new Error('No Space set. Authenticate and create or set a Space.')
 
-    const total = files.reduce((acc, file) => acc + file.size, 0)
-    console.log('[w3up] Uploading directory:', files)
+      const total = files.reduce((acc, file) => acc + file.size, 0)
+      console.log('[w3up] Uploading directory:', files)
 
-    const cid = await this.client.uploadDirectory(files, {
-      onShardStored: () => {
-        if (onProgress) {
-          onProgress({ loaded: total, total, percentage: 100 })
+      const cid = await this.client.uploadDirectory(files, {
+        onShardStored: () => {
+          if (onProgress) {
+            onProgress({ loaded: total, total, percentage: 100 })
+          }
         }
+      })
+
+      console.log('[w3up] ✅ Directory uploaded:', cid.toString())
+
+      return {
+        cid: cid.toString(),
+          url: `https://${cid.toString()}.ipfs.w3s.link/`,
       }
-    })
-
-    console.log('[w3up] ✅ Directory uploaded:', cid.toString())
-
-    return {
-      cid: cid.toString(),
-      url: `https://${cid.toString()}.ipfs.w3s.link/`,
+    } catch (error) {
+      console.error('Web3StorageClient uploadDirectory error:', error)
+      throw error
     }
   }
 

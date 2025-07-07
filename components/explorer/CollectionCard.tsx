@@ -28,18 +28,15 @@ export function CollectionCard({collection}: {collection: Collection}) {
           alt={collection.name}
           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
           style={{ position: "absolute", inset: 0 }}
-        />
-        <div className="absolute top-4 right-4">
-          <Badge
-            variant={collection.status === "open" ? "default" : "secondary"}
-            className="bg-white/90 text-black border-0"
-          >
-            {collection.status}
-          </Badge>
-        </div>
+        />        
       </div>
 
       <CardContent className="p-6 space-y-4">
+      <Badge            
+            className={`${collection.status === "open" ? "bg-green-600/80 text-green-100 border-0" : "bg-red-600/80 text-red-100 border-0"}`}
+          >
+            {collection.status}
+          </Badge>
         <div className="space-y-2">
           <h3 className="font-semibold text-xl">{collection.name}</h3>
           <p className="text-muted-foreground text-sm">by {collection.creator}</p>
@@ -47,7 +44,7 @@ export function CollectionCard({collection}: {collection: Collection}) {
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-2xl font-bold">{collection.price} MON</p>
+            <p className="text-2xl font-bold">{collection.price} ETH</p>
             <p className="text-xs text-muted-foreground">{collection.itemCount} items</p>
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">
@@ -61,7 +58,7 @@ export function CollectionCard({collection}: {collection: Collection}) {
           disabled={collection.status === "closed"}
           variant={collection.status === "open" ? "default" : "secondary"}
         >
-          {collection.status === "open" ? "Mint Now" : "Sold Out"}
+          {collection.status === "open" ? "Mint Now" : "Mint Closed"}
         </Button>
       </CardContent>
     </Card>

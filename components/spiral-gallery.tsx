@@ -59,6 +59,31 @@ const realImages = [
   "/images/yellow-spiral-smiley.jpg",
   "/images/checkered-mouth-yellow.jpg",
   "/images/colorful-hands-unity.jpg",
+  "/images/1.jpg",
+  "/images/2.jpg",
+  "/images/3.jpg",
+  "/images/4.jpg",
+  "/images/5.jpg",
+  "/images/6.jpg",
+  "/images/7.jpg",
+  "/images/8.jpg",
+  "/images/9.jpg",
+  "/images/10.jpg",
+  "/images/11.jpg",
+  "/images/12.jpg",
+  "/images/13.jpg",
+  "/images/14.jpg",
+  "/images/15.jpg",
+  "/images/16.jpg",
+  "/images/17.jpg",
+  "/images/18.jpg",
+  "/images/19.jpg",
+  "/images/20.jpg",
+  "/images/21.jpg",
+  "/images/22.jpg",
+  "/images/23.jpg",
+  "/images/24.jpg",
+  "/images/25.jpg",
 ]
 
 function generateTunnelLayers() {
@@ -86,7 +111,6 @@ function generateTunnelLayers() {
       const maxDistance = 1600
       const perspectiveIntensity = Math.min(distanceFromCenter / maxDistance, 1)
 
-      const useRealImage = Math.random() < 0.8
       const imageIndex = Math.floor(Math.random() * realImages.length)
 
       layers.push({
@@ -102,7 +126,6 @@ function generateTunnelLayers() {
         opacity: Math.max(0.85 - layer * 0.03, 0.1),
         perspectiveIntensity,
         angleToCenter: Math.atan2(y, x) * (180 / Math.PI),
-        useRealImage,
         imageIndex,
       })
     }
@@ -214,18 +237,14 @@ export default function Component() {
                       clipPath: `polygon(${perspectiveSkew * 0.3}% 0%, ${100 - perspectiveSkew * 0.3}% 0%, ${100 - perspectiveSkew * 0.2}% 100%, ${perspectiveSkew * 0.2}% 100%)`,
                     }}
                   >
-                    {rect.useRealImage ? (
-                      <Image
-                        src={realImages[rect.imageIndex] || "/placeholder.svg"}
-                        alt={`Artwork ${rect.imageIndex + 1}`}
-                        fill
-                        className="object-cover"
-                        style={{ transform: "rotate(90deg)" }}
-                        sizes="250px"
-                      />
-                    ) : (
-                      <div className={`w-full h-full ${isDarkMode ? "bg-gray-800" : "bg-gray-300"}`} />
-                    )}
+                    <Image
+                      src={realImages[rect.imageIndex] && realImages[rect.imageIndex].endsWith('.jpg') ? realImages[rect.imageIndex] : "/images/1.jpg"}
+                      alt={`Artwork ${rect.imageIndex + 1}`}
+                      fill
+                      className="object-cover"
+                      style={{ transform: "rotate(90deg)" }}
+                      sizes="250px"
+                    />
                   </div>
                 </div>
               )

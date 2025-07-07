@@ -13,12 +13,12 @@ import { parseUnits } from "viem/utils"
 import { toast } from 'sonner';
 import { insertCollection } from "@/lib/supabase";
 import { useAccount } from "wagmi";
-import { web3StorageClient } from "@/lib/web3-storage";
 import { createPublicClient, http } from "viem";
 import { monadTestnet } from "viem/chains";
 
 interface DeployCollectionProps {
   baseURI: string
+  imageURI: string
   totalSupply: number
   onDeploy: (deploymentData: DeploymentData) => void
 }
@@ -34,7 +34,7 @@ interface DeploymentData {
   maxPerWallet: number
 }
 
-export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployCollectionProps) {
+export function DeployCollection({ baseURI, imageURI, totalSupply, onDeploy }: DeployCollectionProps) {
   const [formData, setFormData] = useState<DeploymentData>({
     name: "My NFT Collection",
     symbol: "MNC",
@@ -49,7 +49,6 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
   const [isDeploying, setIsDeploying] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [txHash, setTxHash] = useState<string | null>(null)
-  const [imageFile, setImageFile] = useState<File | null>(null)
 
   const { createCollection, isPending } = useCreateCollection()
   const { address } = useAccount();
@@ -106,19 +105,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
     setIsDeploying(true)
     setErrors({})
 
-    try {
-      let imageUrl = "";
-      if (imageFile) {
-        try {
-          const result = await web3StorageClient.uploadFile(imageFile);
-          imageUrl = `https://${result.cid}.ipfs.w3s.link`;
-        } catch (err) {
-          toast.error("Erro ao fazer upload da imagem");
-          setIsDeploying(false);
-          return;
-        }
-      }
-
+    try {    
       const txHash = await createCollection({
         ...formData,
         price: parseUnits(formData.price.toString(), 18),
@@ -142,7 +129,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
           maxPerWallet: formData.maxPerWallet,
           created_at: new Date().toISOString(),
           creator: address,
-          image: imageUrl,
+          image: imageURI,
           contract: contractAddress,
         });
         toast.dismiss(loadingToast);
@@ -255,17 +242,7 @@ export function DeployCollection({ baseURI, totalSupply, onDeploy }: DeployColle
                   This URL will be used to fetch metadata for each NFT
                 </p>
               </div>
-
-              <div className="relative">
-                <Label htmlFor="collectionImage" className="mb-2">Collection Image *</Label>
-                <Input
-                  id="collectionImage"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-                  className="pl-10"
-                />
-              </div>
+              
             </CardContent>
           </Card>
 

@@ -1,5 +1,9 @@
 import { StoreIndexedDB } from '@web3-storage/w3up-client/stores/indexeddb'
-import { StoreMemory } from '@web3-storage/w3up-client/stores/memory'
+import * as Client from '@storacha/client'
+import * as Web3Client from '@web3-storage/w3up-client'
+import * as Space from '@web3-storage/w3up-client/space'
+import { OwnedSpace } from '@storacha/client/space'
+import { Account } from '@storacha/client/account'
 
 export interface UploadProgress {
   loaded: number
@@ -13,10 +17,10 @@ export interface UploadResult {
 }
 
 class Web3StorageClient {
-  private client: any = null
-  private currentSpace: any = null
+  private client: Web3Client.Client | undefined
+  private currentSpace: Space.Space | Space.OwnedSpace | undefined
+  private account: Web3Client.Account.Account | undefined
   private isInitialized = false
-  private account: any = null
 
   async initialize() {
     if (typeof window === "undefined") {
@@ -25,76 +29,53 @@ class Web3StorageClient {
 
     if (this.isInitialized && this.client) return true
 
-    const { create } = await import('@web3-storage/w3up-client')
-    const store = new StoreIndexedDB('w3up-client')
-    this.client = await create({ store })
+    const store = new StoreIndexedDB('client')
+    this.client = await Web3Client.create({store})
 
     this.isInitialized = true
-    console.log('[w3up] Client initialized. Agent DID:', this.client.agent.did())
+    console.log('[w3up] Client initialized. Agent DID:', this.client?.agent.did())
     return true
   }
 
-  async authenticate(email: string) {
+  async authenticate(email: `${string}@${string}`) {
     await this.initialize()
     try {
-      this.account = await this.client.login(email)
-      console.log('[w3up] ✅ Logged in:', this.account)
+      const account = await this.client?.login(email)
+      this.account = account
+      await account?.plan.wait()
+      console.log('[w3up] ✅ Logged in:', this.account?.toJSON())
 
-      console.log('[w3up] Agent DID:', this.client.agent.did())
+      const spaces = this.client?.spaces()
+      const space = spaces?.find((space) => space.name === "NFThing")
+
+      if(!space){
+        const space = await this.client?.createSpace(`NFThing`,{account: this.account})
+        console.log('[w3up] Space:', space)
+        await this.client?.setCurrentSpace(space!.did())
+        this.currentSpace = space!
+      }else{
+        console.log('[w3up] Space:', space)
+        await this.client?.setCurrentSpace(space!.did())
+        this.currentSpace = space!
+      }
       return true
     } catch (error) {
       console.error('Web3StorageClient authenticate error:', error)
       throw error
     }
-  }
+  }  
 
-  async createAndSetSpace() {
-    if (!this.account) {
-      throw new Error('Not authenticated. Please authenticate first.')
-    }
-
-    try {
-      const spaces = await this.client.spaces()
-      if(spaces.length === 0) 
-      {
-        const space = await this.client.createSpace(`NFThing_${Date.now().toString().slice(-8)}`,{account: this.account})
-        console.log('[w3up] Space created:', space.did())
-      }
-      else
-      {
-        this.client.setCurrentSpace(spaces[0].did())
-        this.currentSpace = spaces[0]
-      }
-
-      console.log('[w3up] Spaces:', spaces)
-
-      return true
-    } catch (error) {
-      console.error('Web3StorageClient createAndSetSpace error:', error)
-      throw error
-    }
-  }
-
-  async uploadFile(file: File, onProgress?: (progress: UploadProgress) => void): Promise<UploadResult> {
+  async uploadFile(file: File): Promise<UploadResult> {
     await this.initialize()
     try {
       if (!this.currentSpace) throw new Error('No Space set. Authenticate and create or set a Space.')
-
-      const total = file.size
       console.log('[w3up] Uploading file:', file.name)
-      const cid = await this.client.uploadFile(file, {
-        onShardStored: () => {
-          if (onProgress) {
-            onProgress({ loaded: total, total, percentage: 100 })
-          }
-        }
-      })
-
-      console.log('[w3up] ✅ Upload complete:', cid.toString())
+      const cid = await this.client?.uploadFile(file)
+      console.log('[w3up] ✅ Upload complete:', cid?.toString())
 
       return {
-        cid: cid.toString(),
-          url: `https://${cid.toString()}.ipfs.w3s.link/${file.name}`,
+        cid: cid!.toString(),
+          url: `https://${cid!.toString()}.ipfs.w3s.link`,
       }
     } catch (error) {
       console.error('Web3StorageClient uploadFile error:', error)
@@ -110,7 +91,7 @@ class Web3StorageClient {
       const total = files.reduce((acc, file) => acc + file.size, 0)
       console.log('[w3up] Uploading directory:', files)
 
-      const cid = await this.client.uploadDirectory(files, {
+      const cid = await this.client?.uploadDirectory(files, {
         onShardStored: () => {
           if (onProgress) {
             onProgress({ loaded: total, total, percentage: 100 })
@@ -118,11 +99,12 @@ class Web3StorageClient {
         }
       })
 
-      console.log('[w3up] ✅ Directory uploaded:', cid.toString())
+      console.log('[w3up] ✅ Directory uploaded:', cid!.toString())
+      
 
       return {
-        cid: cid.toString(),
-          url: `https://${cid.toString()}.ipfs.w3s.link/`,
+        cid: cid!.toString(),
+          url: `https://${cid!.toString()}.ipfs.w3s.link/`,
       }
     } catch (error) {
       console.error('Web3StorageClient uploadDirectory error:', error)

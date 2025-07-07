@@ -905,6 +905,7 @@ export default function NFTGenerator() {
           <div className="p-4">
             <DeployCollection
               baseURI={uploadResults?.collectionURL || ""}
+              imageURI={uploadResults?.imageFiles[0].url || ""}
               totalSupply={generatedNFTs.length}
               onDeploy={handleDeploy}
             />

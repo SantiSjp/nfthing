@@ -26,16 +26,12 @@ export function Web3StorageSetup({ onSetupComplete }: Web3StorageSetupProps) {
     setError(null)
 
     try {
-      console.log("Inicializando web3StorageClient")
-      await web3StorageClient.initialize()
-      console.log("web3StorageClient inicializado")
-
       console.log("Autenticando com email:", email)
-      const success = await web3StorageClient.authenticate(email)
+      const success = await web3StorageClient.authenticate(email as `${string}@${string}`)
       console.log("Resultado da autenticação:", success)
 
       if (success) {
-        await web3StorageClient.createAndSetSpace()
+        //await web3StorageClient.createAndSetSpace(email as `${string}@${string}`)
         setStep("complete")
         setTimeout(() => {
           onSetupComplete()

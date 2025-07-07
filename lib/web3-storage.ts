@@ -1,7 +1,3 @@
-import * as Web3Client from '@web3-storage/w3up-client'
-import * as Proof from '@web3-storage/w3up-client/proof'
-import { Signer } from '@web3-storage/w3up-client/principal/ed25519'
-
 export interface UploadProgress {
   loaded: number
   total: number
@@ -15,7 +11,7 @@ export interface UploadResult {
 
 class Web3StorageClient {
   private isInitialized = false
-  private client: Web3Client.Client | undefined
+  private client: any | undefined
 
   async initialize() {
     if (typeof window === "undefined") {
@@ -24,11 +20,15 @@ class Web3StorageClient {
   
     if (this.isInitialized) return true
   
+    const { create } = await import('@web3-storage/w3up-client')
+    const { parse: parseProof } = await import('@web3-storage/w3up-client/proof')
+    const { Signer } = await import('@web3-storage/w3up-client/principal/ed25519')  
+
     const principal = Signer.parse(process.env.NEXT_PUBLIC_KEY!)
-    const client = await Web3Client.create({ principal })
+    const client = await create({ principal })
     this.client = client
   
-    const proof = await Proof.parse(process.env.NEXT_PUBLIC_PROOF!)
+    const proof = await parseProof(process.env.NEXT_PUBLIC_PROOF!)
     const space = await this.client.addSpace(proof)
     await this.client.setCurrentSpace(space.did())
   
@@ -42,8 +42,9 @@ class Web3StorageClient {
   async InitSpace(){
     await this.initialize()
     if (!this.client) throw new Error('Client not initialized. Call initialize() first.')
+    const { parse: parseProof } = await import('@web3-storage/w3up-client/proof')
 
-    const proof = await Proof.parse(process.env.NEXT_PUBLIC_PROOF!)
+    const proof = await parseProof(process.env.NEXT_PUBLIC_PROOF!)
     console.log('[w3up] Proof:', proof)
 
     const space = await this.client?.addSpace(proof)

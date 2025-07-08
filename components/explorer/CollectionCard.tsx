@@ -52,7 +52,7 @@ export function CollectionCard({collection}: {collection: Collection}) {
         toast.error('Public client not available.');
         return;
       }
-      var res = await publicClient.waitForTransactionReceipt({ hash: txHash });
+      const res = await publicClient.waitForTransactionReceipt({ hash: txHash });
       if (res.status !== "success") {      
         toast.dismiss(loadingToast);
         toast.error('Mint failed');
